@@ -1,0 +1,1174 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Inbound Receive</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Amazon Ember Display';
+      src: url('fonts/AmazonEmberDisplay-Light.woff2') format('woff2');
+      font-weight: 300;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Amazon Ember Display';
+      src: url('fonts/AmazonEmberDisplay-Medium.woff2') format('woff2');
+      font-weight: 500;
+      font-style: normal;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: 'Amazon Ember Display', 'Noto Sans', Arial, sans-serif;
+      font-weight: 300;
+      background: #1a1a2e;
+      color: #fff;
+      height: 100%;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      color: #e0e0e0;
+      margin-left: 10%;
+      font-weight: 500;
+    }
+
+    .logo-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+
+    .logo-btn img {
+      width: 88px;
+      height: 88px;
+    }
+
+    .screen { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+    .screen.active { display: flex; }
+
+    .home-screen {
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      padding-bottom: 60px;
+      margin-top: -40px;
+    }
+
+    .home-btn {
+      width: 80%;
+      padding: 24px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .home-btn.receive { background: #1b9c5a; }
+    .home-btn.receive:active { background: #22b86b; }
+    .home-btn.dropzone { background: #0f3460; }
+    .home-btn.dropzone:active { background: #1a4a7a; }
+    .home-btn.search { background: #f58840; }
+    .home-btn.search:active { background: #d97530; }
+
+    .home-footer {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .home-user {
+      font-size: 0.7rem;
+      color: #fff;
+    }
+
+    .logout-btn {
+      background: #e94560;
+      border: none;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+
+    .logout-btn:active {
+      background: #c0392b;
+    }
+
+    .login-screen {
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .login-screen p {
+      color: #fff;
+      font-size: 1.8rem;
+      text-align: center;
+    }
+
+    .badge-img {
+      width: 225px;
+      height: auto;
+      margin-bottom: -10px;
+    }
+
+    .truck-img {
+      width: 150px;
+      height: auto;
+      margin-bottom: 8px;
+    }
+
+    .login-error {
+      color: #e94560;
+      font-size: 0.85rem;
+      font-weight: bold;
+      min-height: 1.2em;
+    }
+
+    .trailer-screen {
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .trailer-screen .mode-label {
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+      background: #1b9c5a;
+    }
+
+    .trailer-screen p {
+      color: #fff;
+      font-size: 1.8rem;
+      text-align: center;
+    }
+
+    .trailer-error {
+      color: #e94560;
+      font-size: 0.85rem;
+      font-weight: bold;
+      min-height: 1.2em;
+    }
+
+    .scan-input-hidden {
+      position: absolute;
+      left: -9999px;
+      opacity: 0;
+    }
+
+    .user-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #16213e;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      font-size: 0.85rem;
+    }
+
+    .user-bar .name { color: #1b9c5a; font-weight: bold; }
+    .user-bar .trailer-id { color: #f58840; font-weight: bold; }
+
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .step {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      background: #16213e;
+      color: #555;
+    }
+
+    .step.active { background: #0f3460; color: #fff; }
+    .step.active-receive { background: #1b9c5a; color: #fff; }
+    .step.done { background: #1b9c5a; color: #fff; }
+
+    .scan-prompt {
+      flex: 0 0 auto;
+      text-align: center;
+      padding: 5px;
+      margin-bottom: 5px;
+    }
+
+    .scan-prompt .icon { font-size: 2.5rem; margin-bottom: 8px; }
+
+    .scan-prompt .instruction {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .scan-prompt .detail { font-size: 0.9rem; color: #888; }
+
+    .scan-prompt .captured {
+      font-size: 1.1rem;
+      color: #1b9c5a;
+      font-family: monospace;
+      margin-top: 8px;
+    }
+
+    .status {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 500;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      transition: background 0.2s;
+    }
+
+    .status.ready   { background: #0f3460; }
+    .status.success { background: #1b9c5a; }
+    .status.error   { background: #e94560; }
+    .status.offline { background: #f58840; }
+
+    .log-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .log-header h2 { font-size: 0.9rem; color: #aaa; }
+
+    .scan-count {
+      background: #0f3460;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+    }
+
+    .log {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      background: #16213e;
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .log-entry {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 8px;
+      border-bottom: 1px solid #1a1a2e;
+      font-size: 0.8rem;
+    }
+
+    .log-entry .barcode { font-family: monospace; }
+    .log-entry .time    { color: #888; }
+    .log-entry.pending  { color: #f58840; }
+    .log-entry.sent     { color: #1b9c5a; }
+    .log-entry.failed   { color: #e94560; }
+
+    .search-screen {
+      justify-content: flex-start;
+      align-items: stretch;
+      gap: 4px;
+    }
+
+    .search-screen .mode-label {
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 0;
+      background: #f58840;
+      text-align: center;
+      align-self: center;
+    }
+
+    .search-prompt {
+      text-align: center;
+      padding: 2px;
+    }
+
+    .search-prompt .icon { font-size: 2.5rem; margin-bottom: 2px; }
+
+    .search-status {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 8px;
+      border-radius: 6px;
+    }
+
+    .search-status.ready   { background: #0f3460; }
+    .search-status.success { background: #1b9c5a; }
+    .search-status.error   { background: #e94560; }
+    .search-status.offline { background: #f58840; }
+
+    .search-trailer-box {
+      background: #16213e;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      text-align: center;
+      display: none;
+    }
+
+    .search-trailer-box .label { color: #888; }
+    .search-trailer-box .value { color: #f58840; font-weight: bold; }
+
+    .search-results {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      background: #16213e;
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .search-results table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+    }
+
+    .search-results th {
+      background: #0f3460;
+      padding: 6px 4px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+    }
+
+    .search-results td {
+      padding: 5px 4px;
+      border-bottom: 1px solid #1a1a2e;
+      text-align: center;
+    }
+
+    .search-results tr:nth-child(even) {
+      background: #1a1a2e;
+    }
+
+    .search-no-results {
+      text-align: center;
+      color: #888;
+      padding: 20px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Inbound Receive</h1>
+    <button class="logo-btn" onclick="goHome()" title="Home">
+      <img src="images/nxu9.png" alt="NXU9">
+    </button>
+  </div>
+
+  <!-- STEP 1: Badge scan -->
+  <div class="screen login-screen active" id="loginScreen">
+    <img src="images/badge.png" alt="Scan Badge" class="badge-img">
+    <p>Scan Badge</p>
+    <input type="text" class="scan-input-hidden" id="badgeInput"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <div class="login-error" id="loginError"></div>
+  </div>
+
+  <!-- STEP 2: Choose mode -->
+  <div class="screen home-screen" id="homeScreen">
+    <button class="home-btn receive" onclick="startMode('receive')">📥 Receive</button>
+    <button class="home-btn dropzone" onclick="startMode('dropzone')">📍 Dropzone</button>
+    <button class="home-btn search" onclick="startMode('search')">🔍 Search</button>
+    <div class="home-footer">
+      <span class="home-user" id="homeUserName"></span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 (Receive only): Scan trailer -->
+  <div class="screen trailer-screen" id="trailerScreen">
+    <div class="mode-label">📥 Receive</div>
+    <img src="images/truck.png" alt="Scan Trailer" class="truck-img">
+    <p>Scan Transhipment ID</p>
+    <input type="text" class="scan-input-hidden" id="trailerInput"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <div class="trailer-error" id="trailerError"></div>
+  </div>
+
+  <!-- STEP 4: Scanner screen -->
+  <div class="screen" id="scannerScreen">
+    <div class="user-bar">
+      <div>
+        <div>User: <span class="name" id="userName"></span></div>
+        <div id="trailerDisplay"></div>
+      </div>
+    </div>
+
+    <div class="step-indicator" id="stepIndicator">
+      <div class="step" id="stepPallet">1. Pallet</div>
+      <div class="step" id="stepDropzone">2. Dropzone</div>
+    </div>
+
+    <div class="scan-prompt" id="scanPrompt">
+      <div class="icon" id="promptIcon"></div>
+      <div class="instruction" id="promptText"></div>
+      <div class="detail" id="promptDetail"></div>
+      <div class="captured" id="promptCaptured"></div>
+    </div>
+
+    <input type="text" class="scan-input-hidden" id="scanInput"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+
+    <div class="status ready" id="status">Scan Pallet</div>
+
+    <div class="log-header">
+      <h2 id="logTitle">Recent Scans</h2>
+      <span class="scan-count" id="scanCount">0 scans</span>
+    </div>
+    <div class="log" id="log"></div>
+  </div>
+
+  <!-- SEARCH screen -->
+  <div class="screen search-screen" id="searchScreen">
+    <div class="mode-label">🔍 Container Search</div>
+
+    <div class="search-prompt" id="searchPrompt">
+      <div class="icon">
+        <img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">
+      </div>
+    </div>
+
+    <input type="text" class="scan-input-hidden" id="searchInput"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+
+    <div class="search-status ready" id="searchStatus">Scan Pallet</div>
+
+    <div class="search-trailer-box" id="searchTrailerBox">
+      <span class="label">Trailer: </span><span class="value" id="searchTrailerValue"></span>
+    </div>
+
+    <div class="search-results" id="searchResults">
+      <div class="search-no-results">Scan a pallet barcode to see its history</div>
+    </div>
+  </div>
+
+  <script>
+    var PA_URL = 'https://96a2e921c35de1afbc46731313c6a0.05.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/25/workflows/909703d3b84546168fdd241a2442692f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xNbDYhH_H6KKuStrvucP-jMYK9xmJm69t6qvUzolmMw';
+    var GS_URL = 'https://script.google.com/macros/s/AKfycby1dfA3thazUN6o28UzCQpGmJMdO3hSaJTggHX0E3HGQpLBCydDhKAixW-xnJPCO44/exec';
+    var OFFLINE_KEY = 'dropzone_offline_queue';
+    var VALID_DROPZONES = ['LIFT', 'CHILLER', 'FREEZER', 'HRV'];
+
+    // ── ROSTER LOOKUP ──
+    var roster = {};
+
+    fetch('data/roster.csv')
+      .then(function(r) {
+        if (!r.ok) throw new Error('Not found');
+        return r.text();
+      })
+      .then(function(text) {
+        var lines = text.trim().split('\n');
+        for (var i = 1; i < lines.length; i++) {
+          var parts = lines[i].split(',');
+          if (parts.length >= 2) {
+            var alias = parts[0].trim();
+            var badge = parts[1].trim();
+            roster[badge] = alias;
+          }
+        }
+        console.log('Roster loaded: ' + Object.keys(roster).length + ' employees');
+      })
+      .catch(function() {
+        console.log('No roster found — will display badge numbers');
+      });
+
+    function lookupAlias(badge) {
+      return roster[badge] || badge;
+    }
+
+    // ── TRAILER ID ABBREVIATION (scanner screen — keeps site name) ──
+    function abbreviateTrailer(id) {
+      if (!id) return 'N/A';
+      var parts = id.split('_');
+      if (parts.length === 3 && parts[2].indexOf('-') !== -1) {
+        return parts[0] + '_' + parts[1] + '_' + parts[2].slice(-6);
+      }
+      if (parts.length >= 5 && parts[2] === 'UNTRAC') {
+        return parts[0] + '_' + parts[1] + '_' + parts[2] + '_' + parts[parts.length - 1].slice(-6);
+      }
+      return id;
+    }
+
+    // ── SHORT TRAILER (search screen — drops site name to save space) ──
+    function shortTrailer(id) {
+      if (!id) return 'N/A';
+      var parts = id.split('_');
+      if (parts.length === 3 && parts[2].indexOf('-') !== -1) {
+        return parts[0] + '_' + parts[2].slice(-6);
+      }
+      if (parts.length >= 5 && parts[2] === 'UNTRAC') {
+        return parts[0] + '_' + parts[2] + '_' + parts[parts.length - 1].slice(-6);
+      }
+      return id;
+    }
+
+    var currentMode = '';
+    var currentUser = '';
+    var currentUserDisplay = '';
+    var currentPallet = '';
+    var currentTrailer = '';
+    var scanCount = 0;
+    var scanStep = 'pallet';
+    var statusTimer = null;
+
+    var badgeInput     = document.getElementById('badgeInput');
+    var loginError     = document.getElementById('loginError');
+    var trailerInput   = document.getElementById('trailerInput');
+    var trailerError   = document.getElementById('trailerError');
+    var scanInput      = document.getElementById('scanInput');
+    var statusEl       = document.getElementById('status');
+    var logEl          = document.getElementById('log');
+    var scanCountEl    = document.getElementById('scanCount');
+    var promptIcon     = document.getElementById('promptIcon');
+    var promptText     = document.getElementById('promptText');
+    var promptDetail   = document.getElementById('promptDetail');
+    var promptCaptured = document.getElementById('promptCaptured');
+    var stepPallet     = document.getElementById('stepPallet');
+    var stepDropzone   = document.getElementById('stepDropzone');
+    var searchInput    = document.getElementById('searchInput');
+    var searchStatus   = document.getElementById('searchStatus');
+    var searchResults  = document.getElementById('searchResults');
+    var searchTrailerBox   = document.getElementById('searchTrailerBox');
+    var searchTrailerValue = document.getElementById('searchTrailerValue');
+
+    // Prevent all scrolling except log and search results
+    document.addEventListener('touchmove', function(e) {
+      if (!e.target.closest('.log') && !e.target.closest('.search-results')) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    function isValidBadge(value) {
+      return /^\d+$/.test(value);
+    }
+
+    function isDropzone(value) {
+      return VALID_DROPZONES.indexOf(value) !== -1;
+    }
+
+    function isValidPallet(value) {
+      return value.length >= 11 && value.startsWith('PALLET_') && !isDropzone(value);
+    }
+
+    function isValidTrailer(value) {
+      return /^[A-Z0-9]{4}_/.test(value);
+    }
+
+    function showScreen(id) {
+      var screens = document.querySelectorAll('.screen');
+      for (var i = 0; i < screens.length; i++) {
+        screens[i].classList.remove('active');
+      }
+      document.getElementById(id).classList.add('active');
+    }
+
+    function resetPromptIcon() {
+      promptIcon.style.display = '';
+      promptIcon.style.alignItems = '';
+      promptIcon.style.justifyContent = '';
+    }
+
+    function setInlineIcons(html) {
+      promptIcon.innerHTML = html;
+      promptIcon.style.display = 'flex';
+      promptIcon.style.alignItems = 'center';
+      promptIcon.style.justifyContent = 'center';
+    }
+
+    // ── BADGE SCAN (Step 1) ──
+    badgeInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        var badge = badgeInput.value.trim();
+        badgeInput.value = '';
+        if (!badge) return;
+
+        if (!isValidBadge(badge)) {
+          loginError.textContent = '❌ Invalid ID';
+          return;
+        }
+
+        loginError.textContent = '';
+        currentUser = badge;
+        currentUserDisplay = lookupAlias(badge);
+
+        document.getElementById('homeUserName').textContent = currentUserDisplay;
+        document.getElementById('userName').textContent = currentUserDisplay;
+
+        showScreen('homeScreen');
+      }
+    });
+
+    // ── CHOOSE MODE (Step 2) ──
+    function startMode(mode) {
+      currentMode = mode;
+      currentTrailer = '';
+
+      if (mode === 'receive') {
+        showScreen('trailerScreen');
+        trailerInput.value = '';
+        trailerError.textContent = '';
+        trailerInput.focus();
+      } else if (mode === 'search') {
+        showScreen('searchScreen');
+        searchInput.value = '';
+        searchStatus.textContent = 'Scan Pallet';
+        searchStatus.className = 'search-status ready';
+        searchTrailerBox.style.display = 'none';
+        searchResults.innerHTML = '<div class="search-no-results">Scan a pallet barcode to see its history</div>';
+        searchInput.focus();
+      } else {
+        enterScanner();
+      }
+    }
+
+    // ── HOME (logo button) ──
+    function goHome() {
+      if (!currentUser) return;
+      currentPallet = '';
+      currentTrailer = '';
+      scanCount = 0;
+      scanStep = 'pallet';
+      logEl.innerHTML = '';
+      scanCountEl.textContent = '0 scans';
+      if (statusTimer) clearTimeout(statusTimer);
+      resetPromptIcon();
+      showScreen('homeScreen');
+    }
+
+    // ── LOGOUT ──
+    function logout() {
+      currentUser = '';
+      currentUserDisplay = '';
+      currentMode = '';
+      currentPallet = '';
+      currentTrailer = '';
+      scanCount = 0;
+      scanStep = 'pallet';
+      logEl.innerHTML = '';
+      scanCountEl.textContent = '0 scans';
+      if (statusTimer) clearTimeout(statusTimer);
+      resetPromptIcon();
+      showScreen('loginScreen');
+      badgeInput.value = '';
+      loginError.textContent = '';
+      badgeInput.focus();
+    }
+
+    // ── AUTO FOCUS ──
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.logout-btn')) return;
+      autoFocus();
+    });
+    document.addEventListener('touchstart', function(e) {
+      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.logout-btn')) return;
+      autoFocus();
+    });
+    setInterval(autoFocus, 2000);
+
+    function autoFocus() {
+      var loginScreen = document.getElementById('loginScreen');
+      var trailerScreen = document.getElementById('trailerScreen');
+      var scannerScreen = document.getElementById('scannerScreen');
+      var searchScreen = document.getElementById('searchScreen');
+
+      if (loginScreen.classList.contains('active')) badgeInput.focus();
+      else if (trailerScreen.classList.contains('active')) trailerInput.focus();
+      else if (scannerScreen.classList.contains('active')) scanInput.focus();
+      else if (searchScreen.classList.contains('active')) searchInput.focus();
+    }
+
+    // ── TRAILER SCAN (Step 3, Receive only) ──
+    trailerInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        var trailer = trailerInput.value.trim().toUpperCase();
+        trailerInput.value = '';
+        if (!trailer) return;
+
+        if (!isValidTrailer(trailer)) {
+          trailerError.textContent = '❌ Invalid Transhipment ID';
+          return;
+        }
+
+        trailerError.textContent = '';
+        currentTrailer = trailer;
+        enterScanner();
+      }
+    });
+
+    // ── ENTER SCANNER (Step 4) ──
+    function enterScanner() {
+      scanCount = 0;
+      logEl.innerHTML = '';
+      scanCountEl.textContent = '0 scans';
+
+      if (currentMode === 'receive') {
+        document.getElementById('trailerDisplay').innerHTML =
+          'Trailer: <span class="trailer-id">' + abbreviateTrailer(currentTrailer) + '</span>';
+        document.getElementById('stepIndicator').style.display = 'none';
+        document.getElementById('logTitle').textContent = 'Receive Log';
+        setReceivePalletStep();
+      } else {
+        document.getElementById('trailerDisplay').innerHTML = '';
+        document.getElementById('stepIndicator').style.display = 'flex';
+        stepDropzone.style.display = '';
+        document.getElementById('logTitle').textContent = 'Movement Log';
+        setPalletStep();
+      }
+
+      showScreen('scannerScreen');
+      scanInput.focus();
+    }
+
+    // ── SCAN HANDLER ──
+    scanInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        var value = scanInput.value.trim().toUpperCase();
+        scanInput.value = '';
+        if (!value) return;
+
+        if (currentMode === 'receive') {
+          handleReceiveScan(value);
+        } else {
+          handleDropzoneScan(value);
+        }
+      }
+    });
+
+    function handleReceiveScan(value) {
+      if (isDropzone(value)) {
+        setStatus('❌ Invalid Pallet ID', 'error');
+        return;
+      }
+      if (!isValidPallet(value)) {
+        setStatus('❌ Invalid Pallet', 'error');
+        return;
+      }
+      submitScan(value, 'RECEIVE');
+    }
+
+    function setReceivePalletStep() {
+      scanStep = 'pallet';
+      setInlineIcons(
+        '<img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">' +
+        '<span style="font-size:2rem;margin:0 10px;">➡️</span>' +
+        '<img src="images/warehouse.png" alt="Warehouse" style="width:50px;height:auto;">'
+      );
+      promptText.textContent = '';
+      promptDetail.textContent = '';
+      promptCaptured.textContent = '';
+      setStatus('Scan Pallet', 'ready');
+    }
+
+    function handleDropzoneScan(value) {
+      if (scanStep === 'pallet') {
+        if (isDropzone(value)) {
+          setStatus('❌ No pallet selected for move', 'error');
+          return;
+        }
+        if (!isValidPallet(value)) {
+          setStatus('❌ Invalid Pallet', 'error');
+          return;
+        }
+        currentPallet = value;
+        setDropzoneStep();
+
+      } else if (scanStep === 'dropzone') {
+        if (!isDropzone(value)) {
+          setStatus('❌ Invalid Dropzone', 'error');
+          return;
+        }
+        submitScan(currentPallet, value);
+        currentPallet = '';
+      }
+    }
+
+    function setPalletStep() {
+      scanStep = 'pallet';
+      stepPallet.className = 'step active';
+      stepPallet.textContent = '1. Pallet';
+      stepDropzone.className = 'step';
+      setInlineIcons(
+        '<img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">'
+      );
+      promptText.textContent = '';
+      promptDetail.textContent = '';
+      promptCaptured.textContent = '';
+      setStatus('Scan Pallet', 'ready');
+    }
+
+    function setDropzoneStep() {
+      scanStep = 'dropzone';
+      stepPallet.className = 'step done';
+      stepDropzone.className = 'step active';
+      setInlineIcons(
+        '<img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">' +
+        '<span style="font-size:2rem;margin:0 10px;">➡️</span>' +
+        '<span style="font-size:2.5rem;">📍</span>'
+      );
+      promptText.textContent = '';
+      promptDetail.textContent = 'LIFT · CHILLER · FREEZER · HRV';
+      promptCaptured.textContent = '';
+      setStatus(currentPallet, 'offline');
+    }
+
+    function submitScan(palletId, dropzone) {
+      scanCount++;
+      scanCountEl.textContent = scanCount + ' scans';
+
+      var now = new Date();
+      var timestamp = now.getFullYear() + '/' +
+        String(now.getMonth() + 1).padStart(2, '0') + '/' +
+        String(now.getDate()).padStart(2, '0') + ' ' +
+        String(now.getHours()).padStart(2, '0') + ':' +
+        String(now.getMinutes()).padStart(2, '0');
+
+      var entry = {
+        palletId: palletId,
+        dropzone: dropzone,
+        timestamp: timestamp,
+        user: currentUser,
+        trailerId: currentTrailer || ''
+      };
+
+      addLogEntry(entry, 'pending');
+      setStatus('Sending: ' + palletId + ' → ' + dropzone, 'ready');
+
+      // Send to Power Automate (SharePoint)
+      fetch(PA_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry)
+      })
+      .then(function(r) {
+        if (r.ok || r.status === 202) {
+          updateLogEntry(palletId, timestamp, 'sent');
+          setStatus('✓ ' + palletId + ' → ' + dropzone, 'success');
+          if (statusTimer) clearTimeout(statusTimer);
+          statusTimer = setTimeout(function() {
+            setStatus('Scan Pallet', 'ready');
+          }, 3000);
+        } else {
+          throw new Error('HTTP ' + r.status);
+        }
+      })
+      .catch(function() {
+        queueOffline(entry);
+        updateLogEntry(palletId, timestamp, 'failed');
+        setStatus('⚠ Queued offline: ' + palletId, 'offline');
+        if (statusTimer) clearTimeout(statusTimer);
+        statusTimer = setTimeout(function() {
+          setStatus('Scan Pallet', 'ready');
+        }, 3000);
+      });
+
+      // Also send to Google Sheets (search mirror)
+      fetch(GS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(entry)
+      }).catch(function() {
+        console.log('Google Sheets mirror failed — search may be incomplete');
+      });
+
+      if (currentMode === 'receive') {
+        setReceivePalletStep();
+      } else {
+        scanStep = 'pallet';
+        stepPallet.className = 'step active';
+        stepPallet.textContent = '1. Pallet';
+        stepDropzone.className = 'step';
+        setInlineIcons(
+          '<img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">'
+        );
+        promptText.textContent = '';
+        promptDetail.textContent = '';
+        promptCaptured.textContent = '';
+      }
+    }
+
+    // ── SEARCH HANDLER ──
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        var value = searchInput.value.trim().toUpperCase();
+        searchInput.value = '';
+        if (!value) return;
+
+        if (!isValidPallet(value)) {
+          searchStatus.textContent = '❌ Invalid Pallet';
+          searchStatus.className = 'search-status error';
+          return;
+        }
+
+        performSearch(value);
+      }
+    });
+
+    function performSearch(palletId) {
+      searchStatus.textContent = '🔍 Searching...';
+      searchStatus.className = 'search-status offline';
+      searchTrailerBox.style.display = 'none';
+      searchResults.innerHTML = '<div class="search-no-results">Searching...</div>';
+
+      fetch(GS_URL + '?searchMode=true&palletId=' + encodeURIComponent(palletId))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!data.results || data.results.length === 0) {
+          searchStatus.textContent = '⚠ No entries found';
+          searchStatus.className = 'search-status error';
+          searchTrailerBox.style.display = 'none';
+          searchResults.innerHTML = '<div class="search-no-results">No entries found for this pallet</div>';
+          return;
+        }
+
+        // Find the RECEIVE entry for transhipment ID and base timestamp
+        var receiveEntry = null;
+        for (var i = 0; i < data.results.length; i++) {
+          if (data.results[i].dropzone === 'RECEIVE') {
+            receiveEntry = data.results[i];
+            break;
+          }
+        }
+
+        var receiveTrailer = receiveEntry ? receiveEntry.trailerId : '';
+        var receiveTime = receiveEntry ? parseTimestamp(receiveEntry.timestamp) : null;
+
+        // Green success bar with tick and pallet ID
+        searchStatus.textContent = '✓ ' + palletId;
+        searchStatus.className = 'search-status success';
+
+        // Show trailer box
+        if (receiveTrailer) {
+          searchTrailerValue.textContent = shortTrailer(receiveTrailer);
+          searchTrailerBox.style.display = 'block';
+        } else {
+          searchTrailerBox.style.display = 'none';
+        }
+
+        // Build table WITHOUT trailer column
+        var html = '<table>';
+        html += '<tr><th>Dropzone</th><th>Alias</th><th>Time</th><th>Delta</th></tr>';
+
+        for (var i = 0; i < data.results.length; i++) {
+          var row = data.results[i];
+          var alias = lookupAlias(row.user);
+          var delta = '';
+
+          if (row.dropzone === 'RECEIVE') {
+            delta = '0';
+          } else if (receiveTime) {
+            var rowTime = parseTimestamp(row.timestamp);
+            if (rowTime) {
+              var diffMins = Math.round((rowTime - receiveTime) / 60000);
+              delta = '+' + diffMins;
+            }
+          }
+
+          // Format time as hh:mm dd/mm
+          var displayTime = formatSearchTime(row.timestamp);
+
+          html += '<tr>';
+          html += '<td>' + row.dropzone + '</td>';
+          html += '<td>' + alias + '</td>';
+          html += '<td>' + displayTime + '</td>';
+          html += '<td>' + delta + '</td>';
+          html += '</tr>';
+        }
+
+        html += '</table>';
+        searchResults.innerHTML = html;
+      })
+      .catch(function() {
+        searchStatus.textContent = '❌ Search failed — try again';
+        searchStatus.className = 'search-status error';
+        searchTrailerBox.style.display = 'none';
+        searchResults.innerHTML = '<div class="search-no-results">Search failed. Check connection and try again.</div>';
+      });
+    }
+
+    function formatSearchTime(ts) {
+      if (!ts) return '';
+      ts = ts.trim();
+
+      // Try parsing yyyy/mm/dd hh:mm format
+      var parts = ts.split(' ');
+      if (parts.length >= 2) {
+        var dateBits = parts[0].split('/');
+        var timeBits = parts[1];
+        if (dateBits.length === 3 && timeBits) {
+          return timeBits + ' ' + dateBits[2] + '/' + dateBits[1];
+        }
+      }
+
+      // Fallback: try parsing as a Date string
+      var d = new Date(ts);
+      if (!isNaN(d.getTime())) {
+        var hh = String(d.getHours()).padStart(2, '0');
+        var mm = String(d.getMinutes()).padStart(2, '0');
+        var dd = String(d.getDate()).padStart(2, '0');
+        var mo = String(d.getMonth() + 1).padStart(2, '0');
+        return hh + ':' + mm + ' ' + dd + '/' + mo;
+      }
+
+      return ts;
+    }
+
+    function parseTimestamp(ts) {
+      if (!ts) return null;
+      ts = ts.trim();
+
+      // Try yyyy/mm/dd hh:mm format
+      var parts = ts.split(' ');
+      if (parts.length >= 2) {
+        var dateParts = parts[0].split('/');
+        var timeParts = parts[1].split(':');
+        if (dateParts.length === 3 && timeParts.length >= 2) {
+          return new Date(
+            parseInt(dateParts[0]),
+            parseInt(dateParts[1]) - 1,
+            parseInt(dateParts[2]),
+            parseInt(timeParts[0]),
+            parseInt(timeParts[1])
+          );
+        }
+      }
+
+      // Fallback: try native Date parsing
+      var d = new Date(ts);
+      if (!isNaN(d.getTime())) return d;
+
+      return null;
+    }
+
+    // ── OFFLINE QUEUE ──
+    function queueOffline(entry) {
+      var queue = JSON.parse(localStorage.getItem(OFFLINE_KEY) || '[]');
+      queue.push(entry);
+      localStorage.setItem(OFFLINE_KEY, JSON.stringify(queue));
+    }
+
+    function flushOffline() {
+      var queue = JSON.parse(localStorage.getItem(OFFLINE_KEY) || '[]');
+      if (queue.length === 0) return;
+
+      var remaining = [];
+      var sent = 0;
+
+      queue.forEach(function(entry) {
+        fetch(PA_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entry)
+        })
+        .then(function(r) {
+          if (r.ok || r.status === 202) { sent++; }
+          else { remaining.push(entry); }
+        })
+        .catch(function() {
+          remaining.push(entry);
+        })
+        .finally(function() {
+          if (sent + remaining.length === queue.length) {
+            localStorage.setItem(OFFLINE_KEY, JSON.stringify(remaining));
+            if (sent > 0) setStatus('✓ Synced ' + sent + ' offline scans', 'success');
+          }
+        });
+      });
+    }
+
+    setInterval(flushOffline, 30000);
+
+    function setStatus(message, type) {
+      statusEl.textContent = message;
+      statusEl.className = 'status ' + type;
+    }
+
+    function addLogEntry(entry, state) {
+      var div = document.createElement('div');
+      div.className = 'log-entry ' + state;
+      div.dataset.palletId = entry.palletId;
+      div.dataset.time = entry.timestamp;
+      div.innerHTML =
+        '<span class="barcode">' + entry.palletId + '</span>' +
+        '<span>' + entry.dropzone + '</span>' +
+        '<span class="time">' + entry.timestamp.split(' ')[1] + '</span>';
+      logEl.insertBefore(div, logEl.firstChild);
+      while (logEl.children.length > 50) logEl.removeChild(logEl.lastChild);
+    }
+
+    function updateLogEntry(palletId, timestamp, state) {
+      var entries = logEl.querySelectorAll('.log-entry');
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].dataset.palletId === palletId && entries[i].dataset.time === timestamp) {
+          entries[i].className = 'log-entry ' + state;
+          break;
+        }
+      }
+    }
+
+    window.addEventListener('online', function() {
+      setStatus('Back online — syncing...', 'success');
+      flushOffline();
+    });
+
+    window.addEventListener('offline', function() {
+      setStatus('⚠ Offline — scans will be queued', 'offline');
+    });
+  </script>
+</body>
+</html>
+
