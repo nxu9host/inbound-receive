@@ -308,7 +308,7 @@
     .search-screen {
       justify-content: flex-start;
       align-items: stretch;
-      gap: 10px;
+      gap: 4px;
     }
 
     .search-screen .mode-label {
@@ -316,7 +316,7 @@
       font-weight: bold;
       padding: 6px 16px;
       border-radius: 20px;
-      margin-bottom: 4px;
+      margin-bottom: 0;
       background: #f58840;
       text-align: center;
       align-self: center;
@@ -324,10 +324,10 @@
 
     .search-prompt {
       text-align: center;
-      padding: 10px;
+      padding: 2px;
     }
 
-    .search-prompt .icon { font-size: 2.5rem; margin-bottom: 8px; }
+    .search-prompt .icon { font-size: 2.5rem; margin-bottom: 2px; }
 
     .search-status {
       text-align: center;
@@ -335,7 +335,6 @@
       font-weight: 500;
       padding: 8px;
       border-radius: 6px;
-      margin-bottom: 8px;
     }
 
     .search-status.ready   { background: #0f3460; }
@@ -345,9 +344,8 @@
 
     .search-trailer-box {
       background: #16213e;
-      padding: 8px 12px;
+      padding: 6px 12px;
       border-radius: 6px;
-      margin-bottom: 8px;
       font-size: 0.85rem;
       text-align: center;
       display: none;
@@ -375,7 +373,7 @@
     .search-results th {
       background: #0f3460;
       padding: 6px 4px;
-      text-align: left;
+      text-align: center;
       position: sticky;
       top: 0;
     }
@@ -383,6 +381,7 @@
     .search-results td {
       padding: 5px 4px;
       border-bottom: 1px solid #1a1a2e;
+      text-align: center;
     }
 
     .search-results tr:nth-child(even) {
