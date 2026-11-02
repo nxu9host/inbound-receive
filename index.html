@@ -528,11 +528,9 @@
     function shortTrailer(id) {
       if (!id) return 'N/A';
       var parts = id.split('_');
-      // ALT1_NXM2_51BDF97A-... → ALT1_7B83B6
       if (parts.length === 3 && parts[2].indexOf('-') !== -1) {
         return parts[0] + '_' + parts[2].slice(-6);
       }
-      // ALT1_NXM2_UNTRAC_... → ALT1_UNTRAC_7B83B6
       if (parts.length >= 5 && parts[2] === 'UNTRAC') {
         return parts[0] + '_' + parts[2] + '_' + parts[parts.length - 1].slice(-6);
       }
@@ -947,12 +945,11 @@
       searchStatus.className = 'search-status offline';
       searchResults.innerHTML = '<div class="search-no-results">Searching...</div>';
 
-      // Use GET request to avoid CORS issues
       fetch(GS_URL + '?searchMode=true&palletId=' + encodeURIComponent(palletId))
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (!data.results || data.results.length === 0) {
-          searchStatus.textContent = '⚠ No entries found for ' + palletId;
+          searchStatus.textContent = '⚠ No entries found';
           searchStatus.className = 'search-status error';
           searchResults.innerHTML = '<div class="search-no-results">No entries found for this pallet</div>';
           return;
@@ -970,7 +967,8 @@
         var receiveTrailer = receiveEntry ? receiveEntry.trailerId : 'N/A';
         var receiveTime = receiveEntry ? parseTimestamp(receiveEntry.timestamp) : null;
 
-        searchStatus.textContent = '✓ Found ' + data.results.length + ' entries';
+        // Green success bar with tick and pallet ID
+        searchStatus.textContent = '✓ ' + palletId;
         searchStatus.className = 'search-status success';
 
         var html = '<table>';
@@ -995,16 +993,7 @@
           var displayTrailer = trailerId ? shortTrailer(trailerId) : 'N/A';
 
           // Format time as hh:mm dd/mm
-          var displayTime = '';
-          if (row.timestamp) {
-            var tsParts = row.timestamp.split(' ');
-            if (tsParts.length === 2) {
-              var dateBits = tsParts[0].split('/');
-              if (dateBits.length === 3) {
-                displayTime = tsParts[1] + ' ' + dateBits[2] + '/' + dateBits[1];
-              }
-            }
-          }
+          var displayTime = formatSearchTime(row.timestamp);
 
           html += '<tr>';
           html += '<td>' + displayTrailer + '</td>';
@@ -1025,21 +1014,58 @@
       });
     }
 
+    function formatSearchTime(ts) {
+      if (!ts) return '';
+      ts = ts.trim();
+
+      // Try parsing yyyy/mm/dd hh:mm format
+      var parts = ts.split(' ');
+      if (parts.length >= 2) {
+        var dateBits = parts[0].split('/');
+        var timeBits = parts[1];
+        if (dateBits.length === 3 && timeBits) {
+          return timeBits + ' ' + dateBits[2] + '/' + dateBits[1];
+        }
+      }
+
+      // Fallback: try parsing as a Date string (e.g. from Google Sheets)
+      var d = new Date(ts);
+      if (!isNaN(d.getTime())) {
+        var hh = String(d.getHours()).padStart(2, '0');
+        var mm = String(d.getMinutes()).padStart(2, '0');
+        var dd = String(d.getDate()).padStart(2, '0');
+        var mo = String(d.getMonth() + 1).padStart(2, '0');
+        return hh + ':' + mm + ' ' + dd + '/' + mo;
+      }
+
+      return ts;
+    }
+
     function parseTimestamp(ts) {
       if (!ts) return null;
       ts = ts.trim();
+
+      // Try yyyy/mm/dd hh:mm format
       var parts = ts.split(' ');
-      if (parts.length < 2) return null;
-      var dateParts = parts[0].split('/');
-      var timeParts = parts[1].split(':');
-      if (dateParts.length < 3 || timeParts.length < 2) return null;
-      return new Date(
-        parseInt(dateParts[0]),
-        parseInt(dateParts[1]) - 1,
-        parseInt(dateParts[2]),
-        parseInt(timeParts[0]),
-        parseInt(timeParts[1])
-      );
+      if (parts.length >= 2) {
+        var dateParts = parts[0].split('/');
+        var timeParts = parts[1].split(':');
+        if (dateParts.length === 3 && timeParts.length >= 2) {
+          return new Date(
+            parseInt(dateParts[0]),
+            parseInt(dateParts[1]) - 1,
+            parseInt(dateParts[2]),
+            parseInt(timeParts[0]),
+            parseInt(timeParts[1])
+          );
+        }
+      }
+
+      // Fallback: try native Date parsing
+      var d = new Date(ts);
+      if (!isNaN(d.getTime())) return d;
+
+      return null;
     }
 
     // ── OFFLINE QUEUE ──
