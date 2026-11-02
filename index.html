@@ -511,7 +511,7 @@
       return roster[badge] || badge;
     }
 
-    // ── TRAILER ID ABBREVIATION ──
+    // ── TRAILER ID ABBREVIATION (scanner screen — keeps site name) ──
     function abbreviateTrailer(id) {
       if (!id) return 'N/A';
       var parts = id.split('_');
@@ -520,6 +520,21 @@
       }
       if (parts.length >= 5 && parts[2] === 'UNTRAC') {
         return parts[0] + '_' + parts[1] + '_' + parts[2] + '_' + parts[parts.length - 1].slice(-6);
+      }
+      return id;
+    }
+
+    // ── SHORT TRAILER (search screen — drops site name to save space) ──
+    function shortTrailer(id) {
+      if (!id) return 'N/A';
+      var parts = id.split('_');
+      // ALT1_NXM2_51BDF97A-... → ALT1_7B83B6
+      if (parts.length === 3 && parts[2].indexOf('-') !== -1) {
+        return parts[0] + '_' + parts[2].slice(-6);
+      }
+      // ALT1_NXM2_UNTRAC_... → ALT1_UNTRAC_7B83B6
+      if (parts.length >= 5 && parts[2] === 'UNTRAC') {
+        return parts[0] + '_' + parts[2] + '_' + parts[parts.length - 1].slice(-6);
       }
       return id;
     }
@@ -977,8 +992,19 @@
             }
           }
 
-          var displayTrailer = trailerId ? abbreviateTrailer(trailerId) : 'N/A';
-          var displayTime = row.timestamp ? row.timestamp.split(' ')[1] || row.timestamp : '';
+          var displayTrailer = trailerId ? shortTrailer(trailerId) : 'N/A';
+
+          // Format time as hh:mm dd/mm
+          var displayTime = '';
+          if (row.timestamp) {
+            var tsParts = row.timestamp.split(' ');
+            if (tsParts.length === 2) {
+              var dateBits = tsParts[0].split('/');
+              if (dateBits.length === 3) {
+                displayTime = tsParts[1] + ' ' + dateBits[2] + '/' + dateBits[1];
+              }
+            }
+          }
 
           html += '<tr>';
           html += '<td>' + displayTrailer + '</td>';
@@ -1001,6 +1027,7 @@
 
     function parseTimestamp(ts) {
       if (!ts) return null;
+      ts = ts.trim();
       var parts = ts.split(' ');
       if (parts.length < 2) return null;
       var dateParts = parts[0].split('/');
