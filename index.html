@@ -343,6 +343,19 @@
     .search-status.error   { background: #e94560; }
     .search-status.offline { background: #f58840; }
 
+    .search-trailer-box {
+      background: #16213e;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      text-align: center;
+      display: none;
+    }
+
+    .search-trailer-box .label { color: #888; }
+    .search-trailer-box .value { color: #f58840; font-weight: bold; }
+
     .search-results {
       flex: 1;
       min-height: 0;
@@ -356,7 +369,7 @@
     .search-results table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
     }
 
     .search-results th {
@@ -464,13 +477,16 @@
       <div class="icon">
         <img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">
       </div>
-      <p>Scan a pallet to search</p>
     </div>
 
     <input type="text" class="scan-input-hidden" id="searchInput"
       autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 
     <div class="search-status ready" id="searchStatus">Scan Pallet</div>
+
+    <div class="search-trailer-box" id="searchTrailerBox">
+      <span class="label">Trailer: </span><span class="value" id="searchTrailerValue"></span>
+    </div>
 
     <div class="search-results" id="searchResults">
       <div class="search-no-results">Scan a pallet barcode to see its history</div>
@@ -563,6 +579,8 @@
     var searchInput    = document.getElementById('searchInput');
     var searchStatus   = document.getElementById('searchStatus');
     var searchResults  = document.getElementById('searchResults');
+    var searchTrailerBox   = document.getElementById('searchTrailerBox');
+    var searchTrailerValue = document.getElementById('searchTrailerValue');
 
     // Prevent all scrolling except log and search results
     document.addEventListener('touchmove', function(e) {
@@ -647,6 +665,7 @@
         searchInput.value = '';
         searchStatus.textContent = 'Scan Pallet';
         searchStatus.className = 'search-status ready';
+        searchTrailerBox.style.display = 'none';
         searchResults.innerHTML = '<div class="search-no-results">Scan a pallet barcode to see its history</div>';
         searchInput.focus();
       } else {
@@ -896,7 +915,7 @@
         }, 3000);
       });
 
-      // Also send to Google Sheets (search mirror) — no-cors to avoid CORS block
+      // Also send to Google Sheets (search mirror)
       fetch(GS_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -941,8 +960,9 @@
     });
 
     function performSearch(palletId) {
-      searchStatus.textContent = '🔍 Searching: ' + palletId;
+      searchStatus.textContent = '🔍 Searching...';
       searchStatus.className = 'search-status offline';
+      searchTrailerBox.style.display = 'none';
       searchResults.innerHTML = '<div class="search-no-results">Searching...</div>';
 
       fetch(GS_URL + '?searchMode=true&palletId=' + encodeURIComponent(palletId))
@@ -951,6 +971,7 @@
         if (!data.results || data.results.length === 0) {
           searchStatus.textContent = '⚠ No entries found';
           searchStatus.className = 'search-status error';
+          searchTrailerBox.style.display = 'none';
           searchResults.innerHTML = '<div class="search-no-results">No entries found for this pallet</div>';
           return;
         }
@@ -964,19 +985,27 @@
           }
         }
 
-        var receiveTrailer = receiveEntry ? receiveEntry.trailerId : 'N/A';
+        var receiveTrailer = receiveEntry ? receiveEntry.trailerId : '';
         var receiveTime = receiveEntry ? parseTimestamp(receiveEntry.timestamp) : null;
 
         // Green success bar with tick and pallet ID
         searchStatus.textContent = '✓ ' + palletId;
         searchStatus.className = 'search-status success';
 
+        // Show trailer box
+        if (receiveTrailer) {
+          searchTrailerValue.textContent = shortTrailer(receiveTrailer);
+          searchTrailerBox.style.display = 'block';
+        } else {
+          searchTrailerBox.style.display = 'none';
+        }
+
+        // Build table WITHOUT trailer column
         var html = '<table>';
-        html += '<tr><th>Trailer</th><th>Dropzone</th><th>Alias</th><th>Time</th><th>Delta</th></tr>';
+        html += '<tr><th>Dropzone</th><th>Alias</th><th>Time</th><th>Delta</th></tr>';
 
         for (var i = 0; i < data.results.length; i++) {
           var row = data.results[i];
-          var trailerId = row.trailerId || receiveTrailer;
           var alias = lookupAlias(row.user);
           var delta = '';
 
@@ -990,13 +1019,10 @@
             }
           }
 
-          var displayTrailer = trailerId ? shortTrailer(trailerId) : 'N/A';
-
           // Format time as hh:mm dd/mm
           var displayTime = formatSearchTime(row.timestamp);
 
           html += '<tr>';
-          html += '<td>' + displayTrailer + '</td>';
           html += '<td>' + row.dropzone + '</td>';
           html += '<td>' + alias + '</td>';
           html += '<td>' + displayTime + '</td>';
@@ -1010,6 +1036,7 @@
       .catch(function() {
         searchStatus.textContent = '❌ Search failed — try again';
         searchStatus.className = 'search-status error';
+        searchTrailerBox.style.display = 'none';
         searchResults.innerHTML = '<div class="search-no-results">Search failed. Check connection and try again.</div>';
       });
     }
@@ -1028,7 +1055,7 @@
         }
       }
 
-      // Fallback: try parsing as a Date string (e.g. from Google Sheets)
+      // Fallback: try parsing as a Date string
       var d = new Date(ts);
       if (!isNaN(d.getTime())) {
         var hh = String(d.getHours()).padStart(2, '0');
