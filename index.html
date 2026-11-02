@@ -76,6 +76,7 @@
       gap: 20px;
       position: relative;
       padding-bottom: 60px;
+      margin-top: -40px;
     }
 
     .home-btn {
@@ -94,6 +95,8 @@
     .home-btn.receive:active { background: #22b86b; }
     .home-btn.dropzone { background: #0f3460; }
     .home-btn.dropzone:active { background: #1a4a7a; }
+    .home-btn.search { background: #f58840; }
+    .home-btn.search:active { background: #d97530; }
 
     .home-footer {
       position: absolute;
@@ -301,6 +304,80 @@
     .log-entry.pending  { color: #f58840; }
     .log-entry.sent     { color: #1b9c5a; }
     .log-entry.failed   { color: #e94560; }
+
+    /* Search screen styles */
+    .search-screen {
+      justify-content: flex-start;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    .search-screen .mode-label {
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 4px;
+      background: #f58840;
+      text-align: center;
+      align-self: center;
+    }
+
+    .search-prompt {
+      text-align: center;
+      padding: 10px;
+    }
+
+    .search-prompt .icon { font-size: 2.5rem; margin-bottom: 8px; }
+
+    .search-status {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 8px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .search-results {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      background: #16213e;
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .search-results table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.7rem;
+    }
+
+    .search-results th {
+      background: #0f3460;
+      padding: 6px 4px;
+      text-align: left;
+      position: sticky;
+      top: 0;
+    }
+
+    .search-results td {
+      padding: 5px 4px;
+      border-bottom: 1px solid #1a1a2e;
+    }
+
+    .search-results tr:nth-child(even) {
+      background: #1a1a2e;
+    }
+
+    .search-no-results {
+      text-align: center;
+      color: #888;
+      padding: 20px;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
@@ -312,7 +389,7 @@
     </button>
   </div>
 
-  <!-- STEP 1: Badge scan (first screen) -->
+  <!-- STEP 1: Badge scan -->
   <div class="screen login-screen active" id="loginScreen">
     <img src="images/badge.png" alt="Scan Badge" class="badge-img">
     <p style="font-size: 1.8rem;">Scan Badge</p>
@@ -321,10 +398,11 @@
     <div class="login-error" id="loginError"></div>
   </div>
 
-  <!-- STEP 2: Choose mode (after badge scan) -->
+  <!-- STEP 2: Choose mode -->
   <div class="screen home-screen" id="homeScreen">
     <button class="home-btn receive" onclick="startMode('receive')">📥 Receive</button>
     <button class="home-btn dropzone" onclick="startMode('dropzone')">📍 Dropzone</button>
+    <button class="home-btn search" onclick="startMode('search')">🔍 Search</button>
     <div class="home-footer">
       <span class="home-user" id="homeUserName"></span>
       <button class="logout-btn" onclick="logout()">Logout</button>
@@ -343,7 +421,6 @@
 
   <!-- STEP 4: Scanner screen -->
   <div class="screen" id="scannerScreen">
-
     <div class="user-bar">
       <div>
         <div>User: <span class="name" id="userName"></span></div>
@@ -375,8 +452,30 @@
     <div class="log" id="log"></div>
   </div>
 
+  <!-- SEARCH screen -->
+  <div class="screen search-screen" id="searchScreen">
+    <div class="mode-label">🔍 Container Search</div>
+
+    <div class="search-prompt" id="searchPrompt">
+      <div class="icon">
+        <img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">
+      </div>
+      <p>Scan a pallet to search</p>
+    </div>
+
+    <input type="text" class="scan-input-hidden" id="searchInput"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+
+    <div class="search-status ready" id="searchStatus">Scan Pallet</div>
+
+    <div class="search-results" id="searchResults">
+      <div class="search-no-results">Scan a pallet barcode to see its history</div>
+    </div>
+  </div>
+
   <script>
-    var API_URL = 'https://96a2e921c35de1afbc46731313c6a0.05.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/25/workflows/909703d3b84546168fdd241a2442692f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xNbDYhH_H6KKuStrvucP-jMYK9xmJm69t6qvUzolmMw';
+    var PA_URL = 'https://96a2e921c35de1afbc46731313c6a0.05.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/25/workflows/909703d3b84546168fdd241a2442692f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xNbDYhH_H6KKuStrvucP-jMYK9xmJm69t6qvUzolmMw';
+    var GS_URL = 'https://script.google.com/macros/s/AKfycby6DIla6Z5N00XBCOrSW9he3BArmOoUrISyKMp2z9zbxuXFCabr5sl8CHUGKe13bYo/exec';
     var OFFLINE_KEY = 'dropzone_offline_queue';
     var VALID_DROPZONES = ['LIFT', 'CHILLER', 'FREEZER', 'HRV'];
 
@@ -443,10 +542,13 @@
     var promptCaptured = document.getElementById('promptCaptured');
     var stepPallet     = document.getElementById('stepPallet');
     var stepDropzone   = document.getElementById('stepDropzone');
+    var searchInput    = document.getElementById('searchInput');
+    var searchStatus   = document.getElementById('searchStatus');
+    var searchResults  = document.getElementById('searchResults');
 
-    // Prevent all scrolling except the log
+    // Prevent all scrolling except log and search results
     document.addEventListener('touchmove', function(e) {
-      if (!e.target.closest('.log')) {
+      if (!e.target.closest('.log') && !e.target.closest('.search-results')) {
         e.preventDefault();
       }
     }, { passive: false });
@@ -522,12 +624,19 @@
         trailerInput.value = '';
         trailerError.textContent = '';
         trailerInput.focus();
+      } else if (mode === 'search') {
+        showScreen('searchScreen');
+        searchInput.value = '';
+        searchStatus.textContent = 'Scan Pallet';
+        searchStatus.className = 'search-status ready';
+        searchResults.innerHTML = '<div class="search-no-results">Scan a pallet barcode to see its history</div>';
+        searchInput.focus();
       } else {
         enterScanner();
       }
     }
 
-    // ── HOME (logo button) — back to mode selection, stay logged in ──
+    // ── HOME (logo button) ──
     function goHome() {
       if (!currentUser) return;
       currentPallet = '';
@@ -541,7 +650,7 @@
       showScreen('homeScreen');
     }
 
-    // ── LOGOUT — back to badge scan ──
+    // ── LOGOUT ──
     function logout() {
       currentUser = '';
       currentUserDisplay = '';
@@ -575,10 +684,12 @@
       var loginScreen = document.getElementById('loginScreen');
       var trailerScreen = document.getElementById('trailerScreen');
       var scannerScreen = document.getElementById('scannerScreen');
+      var searchScreen = document.getElementById('searchScreen');
 
       if (loginScreen.classList.contains('active')) badgeInput.focus();
       else if (trailerScreen.classList.contains('active')) trailerInput.focus();
       else if (scannerScreen.classList.contains('active')) scanInput.focus();
+      else if (searchScreen.classList.contains('active')) searchInput.focus();
     }
 
     // ── TRAILER SCAN (Step 3, Receive only) ──
@@ -739,7 +850,8 @@
       addLogEntry(entry, 'pending');
       setStatus('Sending: ' + palletId + ' → ' + dropzone, 'ready');
 
-      fetch(API_URL, {
+      // Send to Power Automate (SharePoint)
+      fetch(PA_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(entry)
@@ -766,6 +878,15 @@
         }, 3000);
       });
 
+      // Also send to Google Sheets (search mirror)
+      fetch(GS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry)
+      }).catch(function() {
+        console.log('Google Sheets mirror failed — search may be incomplete');
+      });
+
       if (currentMode === 'receive') {
         setReceivePalletStep();
       } else {
@@ -782,6 +903,117 @@
       }
     }
 
+    // ── SEARCH HANDLER ──
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        var value = searchInput.value.trim().toUpperCase();
+        searchInput.value = '';
+        if (!value) return;
+
+        if (!isValidPallet(value)) {
+          searchStatus.textContent = '❌ Invalid Pallet';
+          searchStatus.className = 'search-status error';
+          return;
+        }
+
+        performSearch(value);
+      }
+    });
+
+    function performSearch(palletId) {
+      searchStatus.textContent = '🔍 Searching: ' + palletId;
+      searchStatus.className = 'search-status offline';
+      searchResults.innerHTML = '<div class="search-no-results">Searching...</div>';
+
+      fetch(GS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ searchMode: true, palletId: palletId })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!data.results || data.results.length === 0) {
+          searchStatus.textContent = '⚠ No entries found for ' + palletId;
+          searchStatus.className = 'search-status error';
+          searchResults.innerHTML = '<div class="search-no-results">No entries found for this pallet</div>';
+          return;
+        }
+
+        // Find the RECEIVE entry for transhipment ID and base timestamp
+        var receiveEntry = null;
+        for (var i = 0; i < data.results.length; i++) {
+          if (data.results[i].dropzone === 'RECEIVE') {
+            receiveEntry = data.results[i];
+            break;
+          }
+        }
+
+        var receiveTrailer = receiveEntry ? receiveEntry.trailerId : 'N/A';
+        var receiveTime = receiveEntry ? parseTimestamp(receiveEntry.timestamp) : null;
+
+        searchStatus.textContent = '✓ Found ' + data.results.length + ' entries';
+        searchStatus.className = 'search-status success';
+
+        var html = '<table>';
+        html += '<tr><th>Trailer</th><th>Dropzone</th><th>Alias</th><th>Time</th><th>Delta</th></tr>';
+
+        for (var i = 0; i < data.results.length; i++) {
+          var row = data.results[i];
+          var trailerId = row.trailerId || receiveTrailer;
+          var alias = lookupAlias(row.user);
+          var delta = '';
+
+          if (row.dropzone === 'RECEIVE') {
+            delta = '0';
+          } else if (receiveTime) {
+            var rowTime = parseTimestamp(row.timestamp);
+            if (rowTime) {
+              var diffMins = Math.round((rowTime - receiveTime) / 60000);
+              delta = '+' + diffMins;
+            }
+          }
+
+          var displayTrailer = trailerId ? abbreviateTrailer(trailerId) : 'N/A';
+          var displayTime = row.timestamp ? row.timestamp.split(' ')[1] || row.timestamp : '';
+
+          html += '<tr>';
+          html += '<td>' + displayTrailer + '</td>';
+          html += '<td>' + row.dropzone + '</td>';
+          html += '<td>' + alias + '</td>';
+          html += '<td>' + displayTime + '</td>';
+          html += '<td>' + delta + '</td>';
+          html += '</tr>';
+        }
+
+        html += '</table>';
+        searchResults.innerHTML = html;
+      })
+      .catch(function() {
+        searchStatus.textContent = '❌ Search failed — try again';
+        searchStatus.className = 'search-status error';
+        searchResults.innerHTML = '<div class="search-no-results">Search failed. Check connection and try again.</div>';
+      });
+    }
+
+    function parseTimestamp(ts) {
+      if (!ts) return null;
+      // Format: yyyy/mm/dd hh:mm
+      var parts = ts.split(' ');
+      if (parts.length < 2) return null;
+      var dateParts = parts[0].split('/');
+      var timeParts = parts[1].split(':');
+      if (dateParts.length < 3 || timeParts.length < 2) return null;
+      return new Date(
+        parseInt(dateParts[0]),
+        parseInt(dateParts[1]) - 1,
+        parseInt(dateParts[2]),
+        parseInt(timeParts[0]),
+        parseInt(timeParts[1])
+      );
+    }
+
+    // ── OFFLINE QUEUE ──
     function queueOffline(entry) {
       var queue = JSON.parse(localStorage.getItem(OFFLINE_KEY) || '[]');
       queue.push(entry);
@@ -796,7 +1028,7 @@
       var sent = 0;
 
       queue.forEach(function(entry) {
-        fetch(API_URL, {
+        fetch(PA_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(entry)
