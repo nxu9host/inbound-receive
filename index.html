@@ -883,10 +883,11 @@
         }, 3000);
       });
 
-      // Also send to Google Sheets (search mirror)
+      // Also send to Google Sheets (search mirror) — no-cors to avoid CORS block
       fetch(GS_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(entry)
       }).catch(function() {
         console.log('Google Sheets mirror failed — search may be incomplete');
@@ -931,11 +932,8 @@
       searchStatus.className = 'search-status offline';
       searchResults.innerHTML = '<div class="search-no-results">Searching...</div>';
 
-      fetch(GS_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ searchMode: true, palletId: palletId })
-      })
+      // Use GET request to avoid CORS issues
+      fetch(GS_URL + '?searchMode=true&palletId=' + encodeURIComponent(palletId))
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (!data.results || data.results.length === 0) {
