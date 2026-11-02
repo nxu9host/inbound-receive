@@ -724,7 +724,7 @@
       var now = new Date();
       var timestamp = now.getFullYear() + '/' +
         String(now.getMonth() + 1).padStart(2, '0') + '/' +
-        String(now.getDate()).padStart(2, '0') + ' - ' +
+        String(now.getDate()).padStart(2, '0') + ' ' +
         String(now.getHours()).padStart(2, '0') + ':' +
         String(now.getMinutes()).padStart(2, '0');
 
@@ -832,7 +832,7 @@
       div.innerHTML =
         '<span class="barcode">' + entry.palletId + '</span>' +
         '<span>' + entry.dropzone + '</span>' +
-        '<span class="time">' + entry.timestamp.split(' - ')[1] + '</span>';
+        '<span class="time">' + entry.timestamp.split(' ')[1] + '</span>';
       logEl.insertBefore(div, logEl.firstChild);
       while (logEl.children.length > 50) logEl.removeChild(logEl.lastChild);
     }
