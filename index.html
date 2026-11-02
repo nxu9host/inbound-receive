@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Inbound Receive</title>
+  <title>Inbound Management</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
   <style>
     @font-face {
@@ -399,7 +399,7 @@
 <body>
 
   <div class="header">
-    <h1>Inbound Receive</h1>
+    <h1 id="pageTitle">Inbound Management</h1>
     <button class="logo-btn" onclick="goHome()" title="Home">
       <img src="images/nxu9.png" alt="NXU9">
     </button>
@@ -497,6 +497,7 @@
     var GS_URL = 'https://script.google.com/macros/s/AKfycby1dfA3thazUN6o28UzCQpGmJMdO3hSaJTggHX0E3HGQpLBCydDhKAixW-xnJPCO44/exec';
     var OFFLINE_KEY = 'dropzone_offline_queue';
     var VALID_DROPZONES = ['LIFT', 'CHILLER', 'FREEZER', 'HRV'];
+    var pageTitle = document.getElementById('pageTitle');
 
     // ── ROSTER LOOKUP ──
     var roster = {};
@@ -645,6 +646,7 @@
         document.getElementById('homeUserName').textContent = currentUserDisplay;
         document.getElementById('userName').textContent = currentUserDisplay;
 
+        pageTitle.textContent = 'Inbound Management';
         showScreen('homeScreen');
       }
     });
@@ -655,11 +657,13 @@
       currentTrailer = '';
 
       if (mode === 'receive') {
+        pageTitle.textContent = 'Inbound Receive';
         showScreen('trailerScreen');
         trailerInput.value = '';
         trailerError.textContent = '';
         trailerInput.focus();
       } else if (mode === 'search') {
+        pageTitle.textContent = 'Container Lookup';
         showScreen('searchScreen');
         searchInput.value = '';
         searchStatus.textContent = 'Scan Pallet';
@@ -668,6 +672,7 @@
         searchResults.innerHTML = '<div class="search-no-results">Scan a pallet barcode to see its history</div>';
         searchInput.focus();
       } else {
+        pageTitle.textContent = 'Inbound Move';
         enterScanner();
       }
     }
@@ -683,6 +688,7 @@
       scanCountEl.textContent = '0 scans';
       if (statusTimer) clearTimeout(statusTimer);
       resetPromptIcon();
+      pageTitle.textContent = 'Inbound Management';
       showScreen('homeScreen');
     }
 
@@ -699,6 +705,7 @@
       scanCountEl.textContent = '0 scans';
       if (statusTimer) clearTimeout(statusTimer);
       resetPromptIcon();
+      pageTitle.textContent = 'Inbound Management';
       showScreen('loginScreen');
       badgeInput.value = '';
       loginError.textContent = '';
