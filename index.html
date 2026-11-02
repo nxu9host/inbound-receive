@@ -135,7 +135,7 @@
 
     .login-screen p {
       color: #fff;
-      font-size: 0.9rem;
+      font-size: 1.8rem;
       text-align: center;
     }
 
@@ -305,7 +305,6 @@
     .log-entry.sent     { color: #1b9c5a; }
     .log-entry.failed   { color: #e94560; }
 
-    /* Search screen styles */
     .search-screen {
       justify-content: flex-start;
       align-items: stretch;
@@ -338,6 +337,11 @@
       border-radius: 6px;
       margin-bottom: 8px;
     }
+
+    .search-status.ready   { background: #0f3460; }
+    .search-status.success { background: #1b9c5a; }
+    .search-status.error   { background: #e94560; }
+    .search-status.offline { background: #f58840; }
 
     .search-results {
       flex: 1;
@@ -392,7 +396,7 @@
   <!-- STEP 1: Badge scan -->
   <div class="screen login-screen active" id="loginScreen">
     <img src="images/badge.png" alt="Scan Badge" class="badge-img">
-    <p style="font-size: 1.8rem;">Scan Badge</p>
+    <p>Scan Badge</p>
     <input type="text" class="scan-input-hidden" id="badgeInput"
       autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     <div class="login-error" id="loginError"></div>
@@ -475,7 +479,7 @@
 
   <script>
     var PA_URL = 'https://96a2e921c35de1afbc46731313c6a0.05.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/25/workflows/909703d3b84546168fdd241a2442692f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xNbDYhH_H6KKuStrvucP-jMYK9xmJm69t6qvUzolmMw';
-    var GS_URL = 'https://script.google.com/macros/s/AKfycby6DIla6Z5N00XBCOrSW9he3BArmOoUrISyKMp2z9zbxuXFCabr5sl8CHUGKe13bYo/exec';
+    var GS_URL = 'https://script.google.com/macros/s/AKfycbwjBlIqjTxgi2nF4PUawvVcBcxPizJB5kFwfbd2QXSNxf0dTsmCfoLhxKFSGtBYDEs/exec';
     var OFFLINE_KEY = 'dropzone_offline_queue';
     var VALID_DROPZONES = ['LIFT', 'CHILLER', 'FREEZER', 'HRV'];
 
@@ -509,6 +513,7 @@
 
     // ── TRAILER ID ABBREVIATION ──
     function abbreviateTrailer(id) {
+      if (!id) return 'N/A';
       var parts = id.split('_');
       if (parts.length === 3 && parts[2].indexOf('-') !== -1) {
         return parts[0] + '_' + parts[1] + '_' + parts[2].slice(-6);
@@ -998,7 +1003,6 @@
 
     function parseTimestamp(ts) {
       if (!ts) return null;
-      // Format: yyyy/mm/dd hh:mm
       var parts = ts.split(' ');
       if (parts.length < 2) return null;
       var dateParts = parts[0].split('/');
