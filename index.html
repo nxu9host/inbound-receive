@@ -73,7 +73,7 @@
     .home-screen {
       justify-content: center;
       align-items: center;
-      gap: 20px;
+      gap: 16px;
       position: relative;
       padding-bottom: 60px;
       margin-top: -40px;
@@ -81,7 +81,7 @@
 
     .home-btn {
       width: 80%;
-      padding: 24px;
+      padding: 20px;
       font-size: 1.3rem;
       font-weight: bold;
       border: none;
@@ -95,6 +95,8 @@
     .home-btn.receive:active { background: #22b86b; }
     .home-btn.dropzone { background: #0f3460; }
     .home-btn.dropzone:active { background: #1a4a7a; }
+    .home-btn.depal { background: #8e44ad; }
+    .home-btn.depal:active { background: #7d3c98; }
     .home-btn.search { background: #f58840; }
     .home-btn.search:active { background: #d97530; }
 
@@ -224,6 +226,7 @@
 
     .step.active { background: #0f3460; color: #fff; }
     .step.active-receive { background: #1b9c5a; color: #fff; }
+    .step.active-depal { background: #8e44ad; color: #fff; }
     .step.done { background: #1b9c5a; color: #fff; }
 
     .scan-prompt {
@@ -264,6 +267,7 @@
     .status.success { background: #1b9c5a; }
     .status.error   { background: #e94560; }
     .status.offline { background: #f58840; }
+    .status.depal   { background: #8e44ad; }
 
     .log-header {
       display: flex;
@@ -418,6 +422,7 @@
   <div class="screen home-screen" id="homeScreen">
     <button class="home-btn receive" onclick="startMode('receive')">📥 Receive</button>
     <button class="home-btn dropzone" onclick="startMode('dropzone')">📍 Dropzone</button>
+    <button class="home-btn depal" onclick="startMode('depal')">📦 Depalletise</button>
     <button class="home-btn search" onclick="startMode('search')">🔍 Search</button>
     <div class="home-footer">
       <span class="home-user" id="homeUserName"></span>
@@ -541,7 +546,7 @@
       return roster[badge] || badge;
     }
 
-    // ── TRAILER ID ABBREVIATION (scanner screen — keeps site name) ──
+    // ── TRAILER ID ABBREVIATION (scanner screen) ──
     function abbreviateTrailer(id) {
       if (!id) return 'N/A';
       var parts = id.split('_');
@@ -554,7 +559,7 @@
       return id;
     }
 
-    // ── SHORT TRAILER (search screen — drops site name to save space) ──
+    // ── SHORT TRAILER (search screen) ──
     function shortTrailer(id) {
       if (!id) return 'N/A';
       var parts = id.split('_');
@@ -686,6 +691,9 @@
         searchTrailerBox.style.display = 'none';
         searchResults.innerHTML = '<div class="search-no-results">Scan a pallet barcode to see its history</div>';
         searchInput.focus();
+      } else if (mode === 'depal') {
+        pageTitle.textContent = 'Depalletise';
+        enterScanner();
       } else {
         pageTitle.textContent = 'Inbound Move';
         enterScanner();
@@ -782,6 +790,11 @@
         document.getElementById('stepIndicator').style.display = 'none';
         document.getElementById('logTitle').textContent = 'Receive Log';
         setReceivePalletStep();
+      } else if (currentMode === 'depal') {
+        document.getElementById('trailerDisplay').innerHTML = '';
+        document.getElementById('stepIndicator').style.display = 'none';
+        document.getElementById('logTitle').textContent = 'Depalletise Log';
+        setDepalStep();
       } else {
         document.getElementById('trailerDisplay').innerHTML = '';
         document.getElementById('stepIndicator').style.display = 'flex';
@@ -804,12 +817,15 @@
 
         if (currentMode === 'receive') {
           handleReceiveScan(value);
+        } else if (currentMode === 'depal') {
+          handleDepalScan(value);
         } else {
           handleDropzoneScan(value);
         }
       }
     });
 
+    // ── RECEIVE SCAN ──
     function handleReceiveScan(value) {
       if (isDropzone(value)) {
         setStatus('❌ Invalid Pallet ID', 'error');
@@ -837,6 +853,34 @@
       setStatus('Scan Pallet', 'ready');
     }
 
+    // ── DEPALLETISE SCAN ──
+    function handleDepalScan(value) {
+      if (isDropzone(value)) {
+        setStatus('❌ Invalid Pallet ID', 'error');
+        playError();
+        return;
+      }
+      if (!isValidPallet(value)) {
+        setStatus('❌ Invalid Pallet', 'error');
+        playError();
+        return;
+      }
+      submitScan(value, 'DEPALLETISE');
+    }
+
+    function setDepalStep() {
+      scanStep = 'pallet';
+      setInlineIcons(
+        '<img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">' +
+        '<span style="font-size:2rem;margin:0 10px;">📦</span>'
+      );
+      promptText.textContent = '';
+      promptDetail.textContent = '';
+      promptCaptured.textContent = '';
+      setStatus('Scan Pallet', 'depal');
+    }
+
+    // ── DROPZONE SCAN ──
     function handleDropzoneScan(value) {
       if (scanStep === 'pallet') {
         if (isDropzone(value)) {
@@ -892,6 +936,7 @@
       setStatus(currentPallet, 'offline');
     }
 
+    // ── SUBMIT SCAN ──
     function submitScan(palletId, dropzone) {
       scanCount++;
       scanCountEl.textContent = scanCount + ' scans';
@@ -927,7 +972,11 @@
           playSuccess();
           if (statusTimer) clearTimeout(statusTimer);
           statusTimer = setTimeout(function() {
-            setStatus('Scan Pallet', 'ready');
+            if (currentMode === 'depal') {
+              setStatus('Scan Pallet', 'depal');
+            } else {
+              setStatus('Scan Pallet', 'ready');
+            }
           }, 3000);
         } else {
           throw new Error('HTTP ' + r.status);
@@ -939,7 +988,11 @@
         setStatus('⚠ Queued offline: ' + palletId, 'offline');
         if (statusTimer) clearTimeout(statusTimer);
         statusTimer = setTimeout(function() {
-          setStatus('Scan Pallet', 'ready');
+          if (currentMode === 'depal') {
+            setStatus('Scan Pallet', 'depal');
+          } else {
+            setStatus('Scan Pallet', 'ready');
+          }
         }, 3000);
       });
 
@@ -955,6 +1008,8 @@
 
       if (currentMode === 'receive') {
         setReceivePalletStep();
+      } else if (currentMode === 'depal') {
+        setDepalStep();
       } else {
         scanStep = 'pallet';
         stepPallet.className = 'step active';
@@ -1006,7 +1061,6 @@
           return;
         }
 
-        // Find the RECEIVE entry for transhipment ID and base timestamp
         var receiveEntry = null;
         for (var i = 0; i < data.results.length; i++) {
           if (data.results[i].dropzone === 'RECEIVE') {
@@ -1018,12 +1072,10 @@
         var receiveTrailer = receiveEntry ? receiveEntry.trailerId : '';
         var receiveTime = receiveEntry ? parseTimestamp(receiveEntry.timestamp) : null;
 
-        // Green success bar with tick and pallet ID
         searchStatus.textContent = '✓ ' + palletId;
         searchStatus.className = 'search-status success';
         playSuccess();
 
-        // Show trailer box
         if (receiveTrailer) {
           searchTrailerValue.textContent = shortTrailer(receiveTrailer);
           searchTrailerBox.style.display = 'block';
@@ -1031,7 +1083,6 @@
           searchTrailerBox.style.display = 'none';
         }
 
-        // Build table WITHOUT trailer column
         var html = '<table>';
         html += '<tr><th>Dropzone</th><th>Alias</th><th>Time</th><th>Delta</th></tr>';
 
@@ -1050,7 +1101,6 @@
             }
           }
 
-          // Format time as hh:mm dd/mm
           var displayTime = formatSearchTime(row.timestamp);
 
           html += '<tr>';
@@ -1076,8 +1126,6 @@
     function formatSearchTime(ts) {
       if (!ts) return '';
       ts = ts.trim();
-
-      // Try parsing yyyy/mm/dd hh:mm format
       var parts = ts.split(' ');
       if (parts.length >= 2) {
         var dateBits = parts[0].split('/');
@@ -1086,8 +1134,6 @@
           return timeBits + ' ' + dateBits[2] + '/' + dateBits[1];
         }
       }
-
-      // Fallback: try parsing as a Date string
       var d = new Date(ts);
       if (!isNaN(d.getTime())) {
         var hh = String(d.getHours()).padStart(2, '0');
@@ -1096,15 +1142,12 @@
         var mo = String(d.getMonth() + 1).padStart(2, '0');
         return hh + ':' + mm + ' ' + dd + '/' + mo;
       }
-
       return ts;
     }
 
     function parseTimestamp(ts) {
       if (!ts) return null;
       ts = ts.trim();
-
-      // Try yyyy/mm/dd hh:mm format
       var parts = ts.split(' ');
       if (parts.length >= 2) {
         var dateParts = parts[0].split('/');
@@ -1119,11 +1162,8 @@
           );
         }
       }
-
-      // Fallback: try native Date parsing
       var d = new Date(ts);
       if (!isNaN(d.getTime())) return d;
-
       return null;
     }
 
