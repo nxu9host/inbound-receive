@@ -459,10 +459,6 @@
       background: #1a2744;
     }
 
-    .zone-card.selected {
-      border-color: #f58840;
-    }
-
     .zone-card .zone-name {
       font-size: 1rem;
       font-weight: bold;
@@ -479,7 +475,55 @@
     .zone-card.freezer .zone-count { color: #00bcd4; }
     .zone-card.hrv .zone-count { color: #e74c3c; }
 
-    .overview-detail {
+    /* ── ZONE DETAIL SCREEN ── */
+    .zone-detail-screen {
+      justify-content: flex-start;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .zone-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .zone-nav-btn {
+      background: #16213e;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .zone-nav-btn:active {
+      background: #1a2744;
+    }
+
+    .zone-nav-name {
+      font-size: 1.4rem;
+      font-weight: bold;
+      min-width: 120px;
+      text-align: center;
+    }
+
+    .zone-nav-name.lift { color: #1b9c5a; }
+    .zone-nav-name.chiller { color: #3498db; }
+    .zone-nav-name.freezer { color: #00bcd4; }
+    .zone-nav-name.hrv { color: #e74c3c; }
+
+    .zone-detail-count {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 4px;
+    }
+
+    .zone-detail-list {
       flex: 1;
       min-height: 0;
       overflow-y: auto;
@@ -487,28 +531,15 @@
       background: #16213e;
       border-radius: 8px;
       padding: 8px;
-      display: none;
     }
 
-    .overview-detail.visible {
-      display: block;
-    }
-
-    .overview-detail-header {
-      font-size: 0.9rem;
-      font-weight: bold;
-      color: #f58840;
-      margin-bottom: 8px;
-      text-align: center;
-    }
-
-    .overview-detail table {
+    .zone-detail-list table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.75rem;
     }
 
-    .overview-detail th {
+    .zone-detail-list th {
       background: #0f3460;
       padding: 6px 4px;
       text-align: center;
@@ -516,21 +547,21 @@
       top: 0;
     }
 
-    .overview-detail td {
+    .zone-detail-list td {
       padding: 5px 4px;
       border-bottom: 1px solid #1a1a2e;
       text-align: center;
     }
 
-    .overview-detail tr:nth-child(even) {
+    .zone-detail-list tr:nth-child(even) {
       background: #1a1a2e;
     }
 
-    .overview-empty {
+    .zone-detail-empty {
       text-align: center;
       color: #888;
-      padding: 16px;
-      font-size: 0.85rem;
+      padding: 20px;
+      font-size: 0.9rem;
     }
   </style>
 </head>
@@ -639,28 +670,34 @@
     <div class="overview-status loading" id="overviewStatus">Loading overview...</div>
 
     <div class="overview-grid" id="overviewGrid">
-      <div class="zone-card lift" onclick="showZoneDetail('LIFT')">
+      <div class="zone-card lift" onclick="openZoneDetail('LIFT')">
         <div class="zone-name">LIFT</div>
         <div class="zone-count" id="countLIFT">-</div>
       </div>
-      <div class="zone-card chiller" onclick="showZoneDetail('CHILLER')">
+      <div class="zone-card chiller" onclick="openZoneDetail('CHILLER')">
         <div class="zone-name">CHILLER</div>
         <div class="zone-count" id="countCHILLER">-</div>
       </div>
-      <div class="zone-card freezer" onclick="showZoneDetail('FREEZER')">
+      <div class="zone-card freezer" onclick="openZoneDetail('FREEZER')">
         <div class="zone-name">FREEZER</div>
         <div class="zone-count" id="countFREEZER">-</div>
       </div>
-      <div class="zone-card hrv" onclick="showZoneDetail('HRV')">
+      <div class="zone-card hrv" onclick="openZoneDetail('HRV')">
         <div class="zone-name">HRV</div>
         <div class="zone-count" id="countHRV">-</div>
       </div>
     </div>
+  </div>
 
-    <div class="overview-detail" id="overviewDetail">
-      <div class="overview-detail-header" id="overviewDetailHeader"></div>
-      <div id="overviewDetailContent"></div>
+  <!-- ZONE DETAIL screen -->
+  <div class="screen zone-detail-screen" id="zoneDetailScreen">
+    <div class="zone-nav">
+      <button class="zone-nav-btn" onclick="cycleZone(-1)">◀</button>
+      <div class="zone-nav-name" id="zoneNavName">LIFT</div>
+      <button class="zone-nav-btn" onclick="cycleZone(1)">▶</button>
     </div>
+    <div class="zone-detail-count" id="zoneDetailCount">0 pallets</div>
+    <div class="zone-detail-list" id="zoneDetailList"></div>
   </div>
 
   <script>
@@ -668,6 +705,7 @@
     var GS_URL = 'https://script.google.com/macros/s/AKfycby1dfA3thazUN6o28UzCQpGmJMdO3hSaJTggHX0E3HGQpLBCydDhKAixW-xnJPCO44/exec';
     var OFFLINE_KEY = 'dropzone_offline_queue';
     var VALID_DROPZONES = ['LIFT', 'CHILLER', 'FREEZER', 'HRV'];
+    var ZONE_ORDER = ['LIFT', 'CHILLER', 'FREEZER', 'HRV'];
     var pageTitle = document.getElementById('pageTitle');
 
     // ── SOUND EFFECTS ──
@@ -746,6 +784,7 @@
     var scanStep = 'pallet';
     var statusTimer = null;
     var overviewData = {};
+    var currentZoneIndex = 0;
 
     var badgeInput     = document.getElementById('badgeInput');
     var loginError     = document.getElementById('loginError');
@@ -767,13 +806,13 @@
     var searchTrailerBox   = document.getElementById('searchTrailerBox');
     var searchTrailerValue = document.getElementById('searchTrailerValue');
     var overviewStatus     = document.getElementById('overviewStatus');
-    var overviewDetail     = document.getElementById('overviewDetail');
-    var overviewDetailHeader  = document.getElementById('overviewDetailHeader');
-    var overviewDetailContent = document.getElementById('overviewDetailContent');
+    var zoneNavName        = document.getElementById('zoneNavName');
+    var zoneDetailCount    = document.getElementById('zoneDetailCount');
+    var zoneDetailList     = document.getElementById('zoneDetailList');
 
-    // Prevent all scrolling except log, search results, and overview detail
+    // Prevent all scrolling except log, search results, and zone detail list
     document.addEventListener('touchmove', function(e) {
-      if (!e.target.closest('.log') && !e.target.closest('.search-results') && !e.target.closest('.overview-detail')) {
+      if (!e.target.closest('.log') && !e.target.closest('.search-results') && !e.target.closest('.zone-detail-list')) {
         e.preventDefault();
       }
     }, { passive: false });
@@ -910,11 +949,11 @@
 
     // ── AUTO FOCUS ──
     document.addEventListener('click', function(e) {
-      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.home-btn-small') || e.target.closest('.logout-btn') || e.target.closest('.zone-card')) return;
+      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.home-btn-small') || e.target.closest('.logout-btn') || e.target.closest('.zone-card') || e.target.closest('.zone-nav-btn')) return;
       autoFocus();
     });
     document.addEventListener('touchstart', function(e) {
-      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.home-btn-small') || e.target.closest('.logout-btn') || e.target.closest('.zone-card')) return;
+      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.home-btn-small') || e.target.closest('.logout-btn') || e.target.closest('.zone-card') || e.target.closest('.zone-nav-btn')) return;
       autoFocus();
     });
     setInterval(autoFocus, 2000);
@@ -1295,17 +1334,11 @@
       showScreen('overviewScreen');
       overviewStatus.textContent = 'Loading overview...';
       overviewStatus.className = 'overview-status loading';
-      overviewDetail.classList.remove('visible');
 
       document.getElementById('countLIFT').textContent = '-';
       document.getElementById('countCHILLER').textContent = '-';
       document.getElementById('countFREEZER').textContent = '-';
       document.getElementById('countHRV').textContent = '-';
-
-      var cards = document.querySelectorAll('.zone-card');
-      for (var i = 0; i < cards.length; i++) {
-        cards[i].classList.remove('selected');
-      }
 
       fetch(GS_URL + '?overviewMode=true')
       .then(function(r) { return r.json(); })
@@ -1318,10 +1351,9 @@
 
         overviewData = data.overview;
 
-        var zones = ['LIFT', 'CHILLER', 'FREEZER', 'HRV'];
         var total = 0;
-        for (var z = 0; z < zones.length; z++) {
-          var zone = zones[z];
+        for (var z = 0; z < ZONE_ORDER.length; z++) {
+          var zone = ZONE_ORDER[z];
           var count = overviewData[zone] ? overviewData[zone].length : 0;
           document.getElementById('count' + zone).textContent = count;
           total += count;
@@ -1336,19 +1368,31 @@
       });
     }
 
-    function showZoneDetail(zone) {
-      var cards = document.querySelectorAll('.zone-card');
-      for (var i = 0; i < cards.length; i++) {
-        cards[i].classList.remove('selected');
-      }
-      event.currentTarget.classList.add('selected');
+    // ── ZONE DETAIL ──
+    function openZoneDetail(zone) {
+      currentZoneIndex = ZONE_ORDER.indexOf(zone);
+      pageTitle.textContent = 'Dropzone Overview';
+      showScreen('zoneDetailScreen');
+      renderZoneDetail();
+    }
 
+    function cycleZone(direction) {
+      currentZoneIndex = (currentZoneIndex + direction + ZONE_ORDER.length) % ZONE_ORDER.length;
+      renderZoneDetail();
+    }
+
+    function renderZoneDetail() {
+      var zone = ZONE_ORDER[currentZoneIndex];
       var pallets = overviewData[zone] || [];
 
-      overviewDetailHeader.textContent = zone + ' — ' + pallets.length + ' pallets';
+      // Set zone name with colour
+      zoneNavName.textContent = zone;
+      zoneNavName.className = 'zone-nav-name ' + zone.toLowerCase();
+
+      zoneDetailCount.textContent = pallets.length + ' pallet' + (pallets.length !== 1 ? 's' : '');
 
       if (pallets.length === 0) {
-        overviewDetailContent.innerHTML = '<div class="overview-empty">No pallets in ' + zone + '</div>';
+        zoneDetailList.innerHTML = '<div class="zone-detail-empty">No pallets in ' + zone + '</div>';
       } else {
         var html = '<table>';
         html += '<tr><th>Pallet ID</th><th>Alias</th><th>Time</th><th>Delta</th></tr>';
@@ -1368,10 +1412,8 @@
         }
 
         html += '</table>';
-        overviewDetailContent.innerHTML = html;
+        zoneDetailList.innerHTML = html;
       }
-
-      overviewDetail.classList.add('visible');
     }
 
     function formatSearchTime(ts) {
