@@ -62,6 +62,8 @@
       outline: none;
     }
 
+    .logo-btn:focus { outline: none; }
+
     .logo-btn img {
       width: 88px;
       height: 88px;
@@ -145,9 +147,7 @@
       cursor: pointer;
     }
 
-    .logout-btn:active {
-      background: #c0392b;
-    }
+    .logout-btn:active { background: #c0392b; }
 
     .login-screen {
       justify-content: center;
@@ -257,21 +257,9 @@
     }
 
     .scan-prompt .icon { font-size: 2.5rem; margin-bottom: 8px; }
-
-    .scan-prompt .instruction {
-      font-size: 1.3rem;
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-
+    .scan-prompt .instruction { font-size: 1.3rem; font-weight: bold; margin-bottom: 6px; }
     .scan-prompt .detail { font-size: 0.9rem; color: #888; }
-
-    .scan-prompt .captured {
-      font-size: 1.1rem;
-      color: #1b9c5a;
-      font-family: monospace;
-      margin-top: 8px;
-    }
+    .scan-prompt .captured { font-size: 1.1rem; color: #1b9c5a; font-family: monospace; margin-top: 8px; }
 
     .status {
       text-align: center;
@@ -388,29 +376,10 @@
       padding: 8px;
     }
 
-    .search-results table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.75rem;
-    }
-
-    .search-results th {
-      background: #0f3460;
-      padding: 6px 4px;
-      text-align: center;
-      position: sticky;
-      top: 0;
-    }
-
-    .search-results td {
-      padding: 5px 4px;
-      border-bottom: 1px solid #1a1a2e;
-      text-align: center;
-    }
-
-    .search-results tr:nth-child(even) {
-      background: #1a1a2e;
-    }
+    .search-results table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+    .search-results th { background: #0f3460; padding: 6px 4px; text-align: center; position: sticky; top: 0; }
+    .search-results td { padding: 5px 4px; border-bottom: 1px solid #1a1a2e; text-align: center; }
+    .search-results tr:nth-child(even) { background: #1a1a2e; }
 
     .search-no-results {
       text-align: center;
@@ -419,7 +388,6 @@
       font-size: 0.9rem;
     }
 
-    /* ── OVERVIEW SCREEN ── */
     .overview-screen {
       justify-content: flex-start;
       align-items: stretch;
@@ -455,27 +423,15 @@
       transition: border-color 0.2s, background 0.2s;
     }
 
-    .zone-card:active {
-      background: #1a2744;
-    }
-
-    .zone-card .zone-name {
-      font-size: 1rem;
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-
-    .zone-card .zone-count {
-      font-size: 2rem;
-      font-weight: bold;
-    }
+    .zone-card:active { background: #1a2744; }
+    .zone-card .zone-name { font-size: 1rem; font-weight: bold; margin-bottom: 6px; }
+    .zone-card .zone-count { font-size: 2rem; font-weight: bold; }
 
     .zone-card.lift .zone-count { color: #1b9c5a; }
     .zone-card.chiller .zone-count { color: #3498db; }
     .zone-card.freezer .zone-count { color: #00bcd4; }
     .zone-card.hrv .zone-count { color: #e74c3c; }
 
-    /* ── ZONE DETAIL SCREEN ── */
     .zone-detail-screen {
       justify-content: flex-start;
       align-items: stretch;
@@ -500,9 +456,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .zone-nav-btn:active {
-      background: #1a2744;
-    }
+    .zone-nav-btn:active { background: #1a2744; }
 
     .zone-nav-name {
       font-size: 1.4rem;
@@ -533,29 +487,10 @@
       padding: 8px;
     }
 
-    .zone-detail-list table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.75rem;
-    }
-
-    .zone-detail-list th {
-      background: #0f3460;
-      padding: 6px 4px;
-      text-align: center;
-      position: sticky;
-      top: 0;
-    }
-
-    .zone-detail-list td {
-      padding: 5px 4px;
-      border-bottom: 1px solid #1a1a2e;
-      text-align: center;
-    }
-
-    .zone-detail-list tr:nth-child(even) {
-      background: #1a1a2e;
-    }
+    .zone-detail-list table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+    .zone-detail-list th { background: #0f3460; padding: 6px 4px; text-align: center; position: sticky; top: 0; }
+    .zone-detail-list td { padding: 5px 4px; border-bottom: 1px solid #1a1a2e; text-align: center; }
+    .zone-detail-list tr:nth-child(even) { background: #1a1a2e; }
 
     .zone-detail-empty {
       text-align: center;
@@ -563,6 +498,9 @@
       padding: 20px;
       font-size: 0.9rem;
     }
+
+    .delta-warn { color: #f58840; font-weight: bold; }
+    .delta-danger { color: #e94560; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -574,7 +512,6 @@
     </button>
   </div>
 
-  <!-- STEP 1: Badge scan -->
   <div class="screen login-screen active" id="loginScreen">
     <img src="images/badge.png" alt="Scan Badge" class="badge-img">
     <p>Scan Badge</p>
@@ -583,7 +520,6 @@
     <div class="login-error" id="loginError"></div>
   </div>
 
-  <!-- STEP 2: Choose mode -->
   <div class="screen home-screen" id="homeScreen">
     <button class="home-btn receive" onclick="startMode('receive')">📥 Receive</button>
     <button class="home-btn dropzone" onclick="startMode('dropzone')">📍 Dropzone</button>
@@ -598,7 +534,6 @@
     </div>
   </div>
 
-  <!-- STEP 3 (Receive only): Scan trailer -->
   <div class="screen trailer-screen" id="trailerScreen">
     <div class="mode-label">📥 Receive</div>
     <img src="images/truck.png" alt="Scan Trailer" class="truck-img">
@@ -608,7 +543,6 @@
     <div class="trailer-error" id="trailerError"></div>
   </div>
 
-  <!-- STEP 4: Scanner screen -->
   <div class="screen" id="scannerScreen">
     <div class="user-bar">
       <div>
@@ -641,7 +575,6 @@
     <div class="log" id="log"></div>
   </div>
 
-  <!-- SEARCH screen -->
   <div class="screen search-screen" id="searchScreen">
     <div class="mode-label">🔍 Container Search</div>
 
@@ -665,7 +598,6 @@
     </div>
   </div>
 
-  <!-- OVERVIEW screen -->
   <div class="screen overview-screen" id="overviewScreen">
     <div class="overview-status loading" id="overviewStatus">Loading overview...</div>
 
@@ -689,7 +621,6 @@
     </div>
   </div>
 
-  <!-- ZONE DETAIL screen -->
   <div class="screen zone-detail-screen" id="zoneDetailScreen">
     <div class="zone-nav">
       <button class="zone-nav-btn" onclick="cycleZone(-1)">◀</button>
@@ -708,71 +639,62 @@
     var ZONE_ORDER = ['LIFT', 'CHILLER', 'FREEZER', 'HRV'];
     var pageTitle = document.getElementById('pageTitle');
 
-    // ── SOUND EFFECTS ──
     var successSound = new Audio('sounds/success.mp3');
     var errorSound = new Audio('sounds/error.mp3');
 
-    function playSuccess() {
-      successSound.currentTime = 0;
-      successSound.play().catch(function() {});
-    }
+    function playSuccess() { successSound.currentTime = 0; successSound.play().catch(function() {}); }
+    function playError() { errorSound.currentTime = 0; errorSound.play().catch(function() {}); }
 
-    function playError() {
-      errorSound.currentTime = 0;
-      errorSound.play().catch(function() {});
-    }
-
-    // ── ROSTER LOOKUP ──
     var roster = {};
 
     fetch('data/roster.csv')
-      .then(function(r) {
-        if (!r.ok) throw new Error('Not found');
-        return r.text();
-      })
+      .then(function(r) { if (!r.ok) throw new Error('Not found'); return r.text(); })
       .then(function(text) {
         var lines = text.trim().split('\n');
         for (var i = 1; i < lines.length; i++) {
           var parts = lines[i].split(',');
           if (parts.length >= 2) {
-            var alias = parts[0].trim();
-            var badge = parts[1].trim();
-            roster[badge] = alias;
+            roster[parts[1].trim()] = parts[0].trim();
           }
         }
         console.log('Roster loaded: ' + Object.keys(roster).length + ' employees');
       })
-      .catch(function() {
-        console.log('No roster found — will display badge numbers');
-      });
+      .catch(function() { console.log('No roster found'); });
 
-    function lookupAlias(badge) {
-      return roster[badge] || badge;
-    }
+    function lookupAlias(badge) { return roster[badge] || badge; }
 
-    // ── TRAILER ID ABBREVIATION ──
     function abbreviateTrailer(id) {
       if (!id) return 'N/A';
       var parts = id.split('_');
-      if (parts.length === 3 && parts[2].indexOf('-') !== -1) {
-        return parts[0] + '_' + parts[1] + '_' + parts[2].slice(-6);
-      }
-      if (parts.length >= 5 && parts[2] === 'UNTRAC') {
-        return parts[0] + '_' + parts[1] + '_' + parts[2] + '_' + parts[parts.length - 1].slice(-6);
-      }
+      if (parts.length === 3 && parts[2].indexOf('-') !== -1) return parts[0] + '_' + parts[1] + '_' + parts[2].slice(-6);
+      if (parts.length >= 5 && parts[2] === 'UNTRAC') return parts[0] + '_' + parts[1] + '_' + parts[2] + '_' + parts[parts.length - 1].slice(-6);
       return id;
     }
 
     function shortTrailer(id) {
       if (!id) return 'N/A';
       var parts = id.split('_');
-      if (parts.length === 3 && parts[2].indexOf('-') !== -1) {
-        return parts[0] + '_' + parts[2].slice(-6);
-      }
-      if (parts.length >= 5 && parts[2] === 'UNTRAC') {
-        return parts[0] + '_' + parts[2] + '_' + parts[parts.length - 1].slice(-6);
-      }
+      if (parts.length === 3 && parts[2].indexOf('-') !== -1) return parts[0] + '_' + parts[2].slice(-6);
+      if (parts.length >= 5 && parts[2] === 'UNTRAC') return parts[0] + '_' + parts[2] + '_' + parts[parts.length - 1].slice(-6);
       return id;
+    }
+
+    function calcLiveDelta(timestamp) {
+      var ts = parseTimestamp(timestamp);
+      if (!ts) return '';
+      var now = new Date();
+      return Math.round((now - ts) / 60000);
+    }
+
+    function formatDelta(mins) {
+      if (mins < 60) return mins + 'm';
+      return Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm';
+    }
+
+    function deltaClass(mins) {
+      if (mins >= 30) return 'delta-danger';
+      if (mins >= 15) return 'delta-warn';
+      return '';
     }
 
     var currentMode = '';
@@ -786,58 +708,44 @@
     var overviewData = {};
     var currentZoneIndex = 0;
 
-    var badgeInput     = document.getElementById('badgeInput');
-    var loginError     = document.getElementById('loginError');
-    var trailerInput   = document.getElementById('trailerInput');
-    var trailerError   = document.getElementById('trailerError');
-    var scanInput      = document.getElementById('scanInput');
-    var statusEl       = document.getElementById('status');
-    var logEl          = document.getElementById('log');
-    var scanCountEl    = document.getElementById('scanCount');
-    var promptIcon     = document.getElementById('promptIcon');
-    var promptText     = document.getElementById('promptText');
-    var promptDetail   = document.getElementById('promptDetail');
+    var badgeInput = document.getElementById('badgeInput');
+    var loginError = document.getElementById('loginError');
+    var trailerInput = document.getElementById('trailerInput');
+    var trailerError = document.getElementById('trailerError');
+    var scanInput = document.getElementById('scanInput');
+    var statusEl = document.getElementById('status');
+    var logEl = document.getElementById('log');
+    var scanCountEl = document.getElementById('scanCount');
+    var promptIcon = document.getElementById('promptIcon');
+    var promptText = document.getElementById('promptText');
+    var promptDetail = document.getElementById('promptDetail');
     var promptCaptured = document.getElementById('promptCaptured');
-    var stepPallet     = document.getElementById('stepPallet');
-    var stepDropzone   = document.getElementById('stepDropzone');
-    var searchInput    = document.getElementById('searchInput');
-    var searchStatus   = document.getElementById('searchStatus');
-    var searchResults  = document.getElementById('searchResults');
-    var searchTrailerBox   = document.getElementById('searchTrailerBox');
+    var stepPallet = document.getElementById('stepPallet');
+    var stepDropzone = document.getElementById('stepDropzone');
+    var searchInput = document.getElementById('searchInput');
+    var searchStatus = document.getElementById('searchStatus');
+    var searchResults = document.getElementById('searchResults');
+    var searchTrailerBox = document.getElementById('searchTrailerBox');
     var searchTrailerValue = document.getElementById('searchTrailerValue');
-    var overviewStatus     = document.getElementById('overviewStatus');
-    var zoneNavName        = document.getElementById('zoneNavName');
-    var zoneDetailCount    = document.getElementById('zoneDetailCount');
-    var zoneDetailList     = document.getElementById('zoneDetailList');
+    var overviewStatus = document.getElementById('overviewStatus');
+    var zoneNavName = document.getElementById('zoneNavName');
+    var zoneDetailCount = document.getElementById('zoneDetailCount');
+    var zoneDetailList = document.getElementById('zoneDetailList');
 
-    // Prevent all scrolling except log, search results, and zone detail list
     document.addEventListener('touchmove', function(e) {
       if (!e.target.closest('.log') && !e.target.closest('.search-results') && !e.target.closest('.zone-detail-list')) {
         e.preventDefault();
       }
     }, { passive: false });
 
-    function isValidBadge(value) {
-      return /^\d+$/.test(value);
-    }
-
-    function isDropzone(value) {
-      return VALID_DROPZONES.indexOf(value) !== -1;
-    }
-
-    function isValidPallet(value) {
-      return value.length >= 11 && value.startsWith('PALLET_') && !isDropzone(value);
-    }
-
-    function isValidTrailer(value) {
-      return /^[A-Z0-9]{4}_/.test(value);
-    }
+    function isValidBadge(v) { return /^\d+$/.test(v); }
+    function isDropzone(v) { return VALID_DROPZONES.indexOf(v) !== -1; }
+    function isValidPallet(v) { return v.length >= 11 && v.startsWith('PALLET_') && !isDropzone(v); }
+    function isValidTrailer(v) { return /^[A-Z0-9]{4}_/.test(v); }
 
     function showScreen(id) {
       var screens = document.querySelectorAll('.screen');
-      for (var i = 0; i < screens.length; i++) {
-        screens[i].classList.remove('active');
-      }
+      for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
       document.getElementById(id).classList.add('active');
     }
 
@@ -854,37 +762,26 @@
       promptIcon.style.justifyContent = 'center';
     }
 
-    // ── BADGE SCAN ──
     badgeInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
         var badge = badgeInput.value.trim();
         badgeInput.value = '';
         if (!badge) return;
-
-        if (!isValidBadge(badge)) {
-          loginError.textContent = '❌ Invalid ID';
-          playError();
-          return;
-        }
-
+        if (!isValidBadge(badge)) { loginError.textContent = '❌ Invalid ID'; playError(); return; }
         loginError.textContent = '';
         currentUser = badge;
         currentUserDisplay = lookupAlias(badge);
-
         document.getElementById('homeUserName').textContent = currentUserDisplay;
         document.getElementById('userName').textContent = currentUserDisplay;
-
         pageTitle.textContent = 'Inbound Management';
         showScreen('homeScreen');
       }
     });
 
-    // ── CHOOSE MODE ──
     function startMode(mode) {
       currentMode = mode;
       currentTrailer = '';
-
       if (mode === 'receive') {
         pageTitle.textContent = 'Inbound Receive';
         showScreen('trailerScreen');
@@ -912,7 +809,6 @@
       }
     }
 
-    // ── HOME ──
     function goHome() {
       if (!currentUser) return;
       currentPallet = '';
@@ -927,7 +823,6 @@
       showScreen('homeScreen');
     }
 
-    // ── LOGOUT ──
     function logout() {
       currentUser = '';
       currentUserDisplay = '';
@@ -947,7 +842,6 @@
       badgeInput.focus();
     }
 
-    // ── AUTO FOCUS ──
     document.addEventListener('click', function(e) {
       if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.home-btn-small') || e.target.closest('.logout-btn') || e.target.closest('.zone-card') || e.target.closest('.zone-nav-btn')) return;
       autoFocus();
@@ -959,46 +853,32 @@
     setInterval(autoFocus, 2000);
 
     function autoFocus() {
-      var loginScreen = document.getElementById('loginScreen');
-      var trailerScreen = document.getElementById('trailerScreen');
-      var scannerScreen = document.getElementById('scannerScreen');
-      var searchScreen = document.getElementById('searchScreen');
-
-      if (loginScreen.classList.contains('active')) badgeInput.focus();
-      else if (trailerScreen.classList.contains('active')) trailerInput.focus();
-      else if (scannerScreen.classList.contains('active')) scanInput.focus();
-      else if (searchScreen.classList.contains('active')) searchInput.focus();
+      if (document.getElementById('loginScreen').classList.contains('active')) badgeInput.focus();
+      else if (document.getElementById('trailerScreen').classList.contains('active')) trailerInput.focus();
+      else if (document.getElementById('scannerScreen').classList.contains('active')) scanInput.focus();
+      else if (document.getElementById('searchScreen').classList.contains('active')) searchInput.focus();
     }
 
-    // ── TRAILER SCAN ──
     trailerInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
         var trailer = trailerInput.value.trim().toUpperCase();
         trailerInput.value = '';
         if (!trailer) return;
-
-        if (!isValidTrailer(trailer)) {
-          trailerError.textContent = '❌ Invalid Transhipment ID';
-          playError();
-          return;
-        }
-
+        if (!isValidTrailer(trailer)) { trailerError.textContent = '❌ Invalid Transhipment ID'; playError(); return; }
         trailerError.textContent = '';
         currentTrailer = trailer;
         enterScanner();
       }
     });
 
-    // ── ENTER SCANNER ──
     function enterScanner() {
       scanCount = 0;
       logEl.innerHTML = '';
       scanCountEl.textContent = '0 scans';
 
       if (currentMode === 'receive') {
-        document.getElementById('trailerDisplay').innerHTML =
-          'Trailer: <span class="trailer-id">' + abbreviateTrailer(currentTrailer) + '</span>';
+        document.getElementById('trailerDisplay').innerHTML = 'Trailer: <span class="trailer-id">' + abbreviateTrailer(currentTrailer) + '</span>';
         document.getElementById('stepIndicator').style.display = 'none';
         document.getElementById('logTitle').textContent = 'Receive Log';
         setReceivePalletStep();
@@ -1019,35 +899,21 @@
       scanInput.focus();
     }
 
-    // ── SCAN HANDLER ──
     scanInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
         var value = scanInput.value.trim().toUpperCase();
         scanInput.value = '';
         if (!value) return;
-
-        if (currentMode === 'receive') {
-          handleReceiveScan(value);
-        } else if (currentMode === 'depal') {
-          handleDepalScan(value);
-        } else {
-          handleDropzoneScan(value);
-        }
+        if (currentMode === 'receive') handleReceiveScan(value);
+        else if (currentMode === 'depal') handleDepalScan(value);
+        else handleDropzoneScan(value);
       }
     });
 
     function handleReceiveScan(value) {
-      if (isDropzone(value)) {
-        setStatus('❌ Invalid Pallet ID', 'error');
-        playError();
-        return;
-      }
-      if (!isValidPallet(value)) {
-        setStatus('❌ Invalid Pallet', 'error');
-        playError();
-        return;
-      }
+      if (isDropzone(value)) { setStatus('❌ Invalid Pallet ID', 'error'); playError(); return; }
+      if (!isValidPallet(value)) { setStatus('❌ Invalid Pallet', 'error'); playError(); return; }
       submitScan(value, 'RECEIVE');
     }
 
@@ -1065,16 +931,8 @@
     }
 
     function handleDepalScan(value) {
-      if (isDropzone(value)) {
-        setStatus('❌ Invalid Pallet ID', 'error');
-        playError();
-        return;
-      }
-      if (!isValidPallet(value)) {
-        setStatus('❌ Invalid Pallet', 'error');
-        playError();
-        return;
-      }
+      if (isDropzone(value)) { setStatus('❌ Invalid Pallet ID', 'error'); playError(); return; }
+      if (!isValidPallet(value)) { setStatus('❌ Invalid Pallet', 'error'); playError(); return; }
       submitScan(value, 'DEPALLETISE');
     }
 
@@ -1092,25 +950,12 @@
 
     function handleDropzoneScan(value) {
       if (scanStep === 'pallet') {
-        if (isDropzone(value)) {
-          setStatus('❌ No pallet selected for move', 'error');
-          playError();
-          return;
-        }
-        if (!isValidPallet(value)) {
-          setStatus('❌ Invalid Pallet', 'error');
-          playError();
-          return;
-        }
+        if (isDropzone(value)) { setStatus('❌ No pallet selected for move', 'error'); playError(); return; }
+        if (!isValidPallet(value)) { setStatus('❌ Invalid Pallet', 'error'); playError(); return; }
         currentPallet = value;
         setDropzoneStep();
-
       } else if (scanStep === 'dropzone') {
-        if (!isDropzone(value)) {
-          setStatus('❌ Invalid Dropzone', 'error');
-          playError();
-          return;
-        }
+        if (!isDropzone(value)) { setStatus('❌ Invalid Dropzone', 'error'); playError(); return; }
         submitScan(currentPallet, value);
         currentPallet = '';
       }
@@ -1121,9 +966,7 @@
       stepPallet.className = 'step active';
       stepPallet.textContent = '1. Pallet';
       stepDropzone.className = 'step';
-      setInlineIcons(
-        '<img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">'
-      );
+      setInlineIcons('<img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">');
       promptText.textContent = '';
       promptDetail.textContent = '';
       promptCaptured.textContent = '';
@@ -1179,15 +1022,10 @@
           playSuccess();
           if (statusTimer) clearTimeout(statusTimer);
           statusTimer = setTimeout(function() {
-            if (currentMode === 'depal') {
-              setStatus('Scan Pallet', 'depal');
-            } else {
-              setStatus('Scan Pallet', 'ready');
-            }
+            if (currentMode === 'depal') setStatus('Scan Pallet', 'depal');
+            else setStatus('Scan Pallet', 'ready');
           }, 3000);
-        } else {
-          throw new Error('HTTP ' + r.status);
-        }
+        } else { throw new Error('HTTP ' + r.status); }
       })
       .catch(function() {
         queueOffline(entry);
@@ -1195,11 +1033,8 @@
         setStatus('⚠ Queued offline: ' + palletId, 'offline');
         if (statusTimer) clearTimeout(statusTimer);
         statusTimer = setTimeout(function() {
-          if (currentMode === 'depal') {
-            setStatus('Scan Pallet', 'depal');
-          } else {
-            setStatus('Scan Pallet', 'ready');
-          }
+          if (currentMode === 'depal') setStatus('Scan Pallet', 'depal');
+          else setStatus('Scan Pallet', 'ready');
         }, 3000);
       });
 
@@ -1208,43 +1043,29 @@
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(entry)
-      }).catch(function() {
-        console.log('Google Sheets mirror failed');
-      });
+      }).catch(function() { console.log('Google Sheets mirror failed'); });
 
-      if (currentMode === 'receive') {
-        setReceivePalletStep();
-      } else if (currentMode === 'depal') {
-        setDepalStep();
-      } else {
+      if (currentMode === 'receive') setReceivePalletStep();
+      else if (currentMode === 'depal') setDepalStep();
+      else {
         scanStep = 'pallet';
         stepPallet.className = 'step active';
         stepPallet.textContent = '1. Pallet';
         stepDropzone.className = 'step';
-        setInlineIcons(
-          '<img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">'
-        );
+        setInlineIcons('<img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">');
         promptText.textContent = '';
         promptDetail.textContent = '';
         promptCaptured.textContent = '';
       }
     }
 
-    // ── SEARCH ──
     searchInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
         var value = searchInput.value.trim().toUpperCase();
         searchInput.value = '';
         if (!value) return;
-
-        if (!isValidPallet(value)) {
-          searchStatus.textContent = '❌ Invalid Pallet';
-          searchStatus.className = 'search-status error';
-          playError();
-          return;
-        }
-
+        if (!isValidPallet(value)) { searchStatus.textContent = '❌ Invalid Pallet'; searchStatus.className = 'search-status error'; playError(); return; }
         performSearch(value);
       }
     });
@@ -1269,10 +1090,7 @@
 
         var receiveEntry = null;
         for (var i = 0; i < data.results.length; i++) {
-          if (data.results[i].dropzone === 'RECEIVE') {
-            receiveEntry = data.results[i];
-            break;
-          }
+          if (data.results[i].dropzone === 'RECEIVE') { receiveEntry = data.results[i]; break; }
         }
 
         var receiveTrailer = receiveEntry ? receiveEntry.trailerId : '';
@@ -1285,12 +1103,9 @@
         if (receiveTrailer) {
           searchTrailerValue.textContent = shortTrailer(receiveTrailer);
           searchTrailerBox.style.display = 'block';
-        } else {
-          searchTrailerBox.style.display = 'none';
-        }
+        } else { searchTrailerBox.style.display = 'none'; }
 
-        var html = '<table>';
-        html += '<tr><th>Dropzone</th><th>Alias</th><th>Time</th><th>Delta</th></tr>';
+        var html = '<table><tr><th>Dropzone</th><th>Alias</th><th>Time</th><th>Delta</th></tr>';
 
         for (var i = 0; i < data.results.length; i++) {
           var row = data.results[i];
@@ -1301,20 +1116,10 @@
             delta = '0';
           } else if (receiveTime) {
             var rowTime = parseTimestamp(row.timestamp);
-            if (rowTime) {
-              var diffMins = Math.round((rowTime - receiveTime) / 60000);
-              delta = '+' + diffMins;
-            }
+            if (rowTime) delta = '+' + Math.round((rowTime - receiveTime) / 60000);
           }
 
-          var displayTime = formatSearchTime(row.timestamp);
-
-          html += '<tr>';
-          html += '<td>' + row.dropzone + '</td>';
-          html += '<td>' + alias + '</td>';
-          html += '<td>' + displayTime + '</td>';
-          html += '<td>' + delta + '</td>';
-          html += '</tr>';
+          html += '<tr><td>' + row.dropzone + '</td><td>' + alias + '</td><td>' + formatSearchTime(row.timestamp) + '</td><td>' + delta + '</td></tr>';
         }
 
         html += '</table>';
@@ -1329,7 +1134,6 @@
       });
     }
 
-    // ── OVERVIEW ──
     function loadOverview() {
       showScreen('overviewScreen');
       overviewStatus.textContent = 'Loading overview...';
@@ -1343,14 +1147,9 @@
       fetch(GS_URL + '?overviewMode=true')
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        if (!data.overview) {
-          overviewStatus.textContent = '❌ No data available';
-          overviewStatus.className = 'overview-status error';
-          return;
-        }
+        if (!data.overview) { overviewStatus.textContent = '❌ No data available'; overviewStatus.className = 'overview-status error'; return; }
 
         overviewData = data.overview;
-
         var total = 0;
         for (var z = 0; z < ZONE_ORDER.length; z++) {
           var zone = ZONE_ORDER[z];
@@ -1368,7 +1167,6 @@
       });
     }
 
-    // ── ZONE DETAIL ──
     function openZoneDetail(zone) {
       currentZoneIndex = ZONE_ORDER.indexOf(zone);
       pageTitle.textContent = 'Dropzone Overview';
@@ -1385,29 +1183,28 @@
       var zone = ZONE_ORDER[currentZoneIndex];
       var pallets = overviewData[zone] || [];
 
-      // Set zone name with colour
       zoneNavName.textContent = zone;
       zoneNavName.className = 'zone-nav-name ' + zone.toLowerCase();
-
       zoneDetailCount.textContent = pallets.length + ' pallet' + (pallets.length !== 1 ? 's' : '');
 
       if (pallets.length === 0) {
         zoneDetailList.innerHTML = '<div class="zone-detail-empty">No pallets in ' + zone + '</div>';
       } else {
-        var html = '<table>';
-        html += '<tr><th>Pallet ID</th><th>Alias</th><th>Time</th><th>Delta</th></tr>';
+        var html = '<table><tr><th>Pallet ID</th><th>Alias</th><th>Time</th><th>Dwell</th></tr>';
 
         for (var i = 0; i < pallets.length; i++) {
           var p = pallets[i];
           var alias = lookupAlias(p.user);
           var displayTime = formatSearchTime(p.timestamp);
-          var delta = p.delta || '';
+          var mins = calcLiveDelta(p.timestamp);
+          var dwellText = (mins !== '') ? formatDelta(mins) : '';
+          var dwellClass = (mins !== '') ? deltaClass(mins) : '';
 
           html += '<tr>';
           html += '<td style="font-family:monospace;font-size:0.7rem;">' + p.palletId + '</td>';
           html += '<td>' + alias + '</td>';
           html += '<td>' + displayTime + '</td>';
-          html += '<td>' + delta + '</td>';
+          html += '<td class="' + dwellClass + '">' + dwellText + '</td>';
           html += '</tr>';
         }
 
@@ -1423,17 +1220,11 @@
       if (parts.length >= 2) {
         var dateBits = parts[0].split('/');
         var timeBits = parts[1];
-        if (dateBits.length === 3 && timeBits) {
-          return timeBits + ' ' + dateBits[2] + '/' + dateBits[1];
-        }
+        if (dateBits.length === 3 && timeBits) return timeBits + ' ' + dateBits[2] + '/' + dateBits[1];
       }
       var d = new Date(ts);
       if (!isNaN(d.getTime())) {
-        var hh = String(d.getHours()).padStart(2, '0');
-        var mm = String(d.getMinutes()).padStart(2, '0');
-        var dd = String(d.getDate()).padStart(2, '0');
-        var mo = String(d.getMonth() + 1).padStart(2, '0');
-        return hh + ':' + mm + ' ' + dd + '/' + mo;
+        return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ' ' + String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
       }
       return ts;
     }
@@ -1446,13 +1237,7 @@
         var dateParts = parts[0].split('/');
         var timeParts = parts[1].split(':');
         if (dateParts.length === 3 && timeParts.length >= 2) {
-          return new Date(
-            parseInt(dateParts[0]),
-            parseInt(dateParts[1]) - 1,
-            parseInt(dateParts[2]),
-            parseInt(timeParts[0]),
-            parseInt(timeParts[1])
-          );
+          return new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]), parseInt(timeParts[0]), parseInt(timeParts[1]));
         }
       }
       var d = new Date(ts);
@@ -1460,7 +1245,6 @@
       return null;
     }
 
-    // ── OFFLINE QUEUE ──
     function queueOffline(entry) {
       var queue = JSON.parse(localStorage.getItem(OFFLINE_KEY) || '[]');
       queue.push(entry);
@@ -1470,7 +1254,6 @@
     function flushOffline() {
       var queue = JSON.parse(localStorage.getItem(OFFLINE_KEY) || '[]');
       if (queue.length === 0) return;
-
       var remaining = [];
       var sent = 0;
 
@@ -1481,12 +1264,10 @@
           body: JSON.stringify(entry)
         })
         .then(function(r) {
-          if (r.ok || r.status === 202) { sent++; }
-          else { remaining.push(entry); }
+          if (r.ok || r.status === 202) sent++;
+          else remaining.push(entry);
         })
-        .catch(function() {
-          remaining.push(entry);
-        })
+        .catch(function() { remaining.push(entry); })
         .finally(function() {
           if (sent + remaining.length === queue.length) {
             localStorage.setItem(OFFLINE_KEY, JSON.stringify(remaining));
@@ -1508,32 +1289,22 @@
       div.className = 'log-entry ' + state;
       div.dataset.palletId = entry.palletId;
       div.dataset.time = entry.timestamp;
-      div.innerHTML =
-        '<span class="barcode">' + entry.palletId + '</span>' +
-        '<span>' + entry.dropzone + '</span>' +
-        '<span class="time">' + entry.timestamp.split(' ')[1] + '</span>';
+      div.innerHTML = '<span class="barcode">' + entry.palletId + '</span><span>' + entry.dropzone + '</span><span class="time">' + entry.timestamp.split(' ')[1] + '</span>';
       logEl.insertBefore(div, logEl.firstChild);
       while (logEl.children.length > 50) logEl.removeChild(logEl.lastChild);
     }
 
-    function updateLogEntry(palletId, timestamp, state) {
+    function updateLogEntry(palletId, time, state) {
       var entries = logEl.querySelectorAll('.log-entry');
       for (var i = 0; i < entries.length; i++) {
-        if (entries[i].dataset.palletId === palletId && entries[i].dataset.time === timestamp) {
+        if (entries[i].dataset.palletId === palletId && entries[i].dataset.time === time) {
           entries[i].className = 'log-entry ' + state;
           break;
         }
       }
     }
 
-    window.addEventListener('online', function() {
-      setStatus('Back online — syncing...', 'success');
-      flushOffline();
-    });
-
-    window.addEventListener('offline', function() {
-      setStatus('⚠ Offline — scans will be queued', 'offline');
-    });
+    badgeInput.focus();
   </script>
 </body>
 </html>
