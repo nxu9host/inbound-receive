@@ -99,6 +99,8 @@
     .home-btn.depal:active { background: #7d3c98; }
     .home-btn.search { background: #f58840; }
     .home-btn.search:active { background: #d97530; }
+    .home-btn.overview { background: #2c3e50; }
+    .home-btn.overview:active { background: #34495e; }
 
     .home-footer {
       position: absolute;
@@ -398,6 +400,120 @@
       padding: 20px;
       font-size: 0.9rem;
     }
+
+    /* ── OVERVIEW SCREEN ── */
+    .overview-screen {
+      justify-content: flex-start;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .overview-status {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 8px;
+      border-radius: 6px;
+    }
+
+    .overview-status.loading { background: #f58840; }
+    .overview-status.ready { background: #0f3460; }
+    .overview-status.error { background: #e94560; }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 4px;
+    }
+
+    .zone-card {
+      background: #16213e;
+      border-radius: 10px;
+      padding: 16px 12px;
+      text-align: center;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .zone-card:active {
+      background: #1a2744;
+    }
+
+    .zone-card.selected {
+      border-color: #f58840;
+    }
+
+    .zone-card .zone-name {
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .zone-card .zone-count {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .zone-card.lift .zone-count { color: #1b9c5a; }
+    .zone-card.chiller .zone-count { color: #3498db; }
+    .zone-card.freezer .zone-count { color: #00bcd4; }
+    .zone-card.hrv .zone-count { color: #e74c3c; }
+
+    .overview-detail {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      background: #16213e;
+      border-radius: 8px;
+      padding: 8px;
+      display: none;
+    }
+
+    .overview-detail.visible {
+      display: block;
+    }
+
+    .overview-detail-header {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #f58840;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .overview-detail table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+    }
+
+    .overview-detail th {
+      background: #0f3460;
+      padding: 6px 4px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+    }
+
+    .overview-detail td {
+      padding: 5px 4px;
+      border-bottom: 1px solid #1a1a2e;
+      text-align: center;
+    }
+
+    .overview-detail tr:nth-child(even) {
+      background: #1a1a2e;
+    }
+
+    .overview-empty {
+      text-align: center;
+      color: #888;
+      padding: 16px;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body>
@@ -424,6 +540,7 @@
     <button class="home-btn dropzone" onclick="startMode('dropzone')">📍 Dropzone</button>
     <button class="home-btn depal" onclick="startMode('depal')">📦 Depalletise</button>
     <button class="home-btn search" onclick="startMode('search')">🔍 Search</button>
+    <button class="home-btn overview" onclick="startMode('overview')">📊 Overview</button>
     <div class="home-footer">
       <span class="home-user" id="homeUserName"></span>
       <button class="logout-btn" onclick="logout()">Logout</button>
@@ -497,6 +614,35 @@
     </div>
   </div>
 
+  <!-- OVERVIEW screen -->
+  <div class="screen overview-screen" id="overviewScreen">
+    <div class="overview-status loading" id="overviewStatus">Loading overview...</div>
+
+    <div class="overview-grid" id="overviewGrid">
+      <div class="zone-card lift" onclick="showZoneDetail('LIFT')">
+        <div class="zone-name">LIFT</div>
+        <div class="zone-count" id="countLIFT">-</div>
+      </div>
+      <div class="zone-card chiller" onclick="showZoneDetail('CHILLER')">
+        <div class="zone-name">CHILLER</div>
+        <div class="zone-count" id="countCHILLER">-</div>
+      </div>
+      <div class="zone-card freezer" onclick="showZoneDetail('FREEZER')">
+        <div class="zone-name">FREEZER</div>
+        <div class="zone-count" id="countFREEZER">-</div>
+      </div>
+      <div class="zone-card hrv" onclick="showZoneDetail('HRV')">
+        <div class="zone-name">HRV</div>
+        <div class="zone-count" id="countHRV">-</div>
+      </div>
+    </div>
+
+    <div class="overview-detail" id="overviewDetail">
+      <div class="overview-detail-header" id="overviewDetailHeader"></div>
+      <div id="overviewDetailContent"></div>
+    </div>
+  </div>
+
   <script>
     var PA_URL = 'https://96a2e921c35de1afbc46731313c6a0.05.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/25/workflows/909703d3b84546168fdd241a2442692f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xNbDYhH_H6KKuStrvucP-jMYK9xmJm69t6qvUzolmMw';
     var GS_URL = 'https://script.google.com/macros/s/AKfycby1dfA3thazUN6o28UzCQpGmJMdO3hSaJTggHX0E3HGQpLBCydDhKAixW-xnJPCO44/exec';
@@ -546,7 +692,7 @@
       return roster[badge] || badge;
     }
 
-    // ── TRAILER ID ABBREVIATION (scanner screen) ──
+    // ── TRAILER ID ABBREVIATION ──
     function abbreviateTrailer(id) {
       if (!id) return 'N/A';
       var parts = id.split('_');
@@ -559,7 +705,6 @@
       return id;
     }
 
-    // ── SHORT TRAILER (search screen) ──
     function shortTrailer(id) {
       if (!id) return 'N/A';
       var parts = id.split('_');
@@ -580,6 +725,7 @@
     var scanCount = 0;
     var scanStep = 'pallet';
     var statusTimer = null;
+    var overviewData = {};
 
     var badgeInput     = document.getElementById('badgeInput');
     var loginError     = document.getElementById('loginError');
@@ -600,10 +746,14 @@
     var searchResults  = document.getElementById('searchResults');
     var searchTrailerBox   = document.getElementById('searchTrailerBox');
     var searchTrailerValue = document.getElementById('searchTrailerValue');
+    var overviewStatus     = document.getElementById('overviewStatus');
+    var overviewDetail     = document.getElementById('overviewDetail');
+    var overviewDetailHeader  = document.getElementById('overviewDetailHeader');
+    var overviewDetailContent = document.getElementById('overviewDetailContent');
 
-    // Prevent all scrolling except log and search results
+    // Prevent all scrolling except log, search results, and overview detail
     document.addEventListener('touchmove', function(e) {
-      if (!e.target.closest('.log') && !e.target.closest('.search-results')) {
+      if (!e.target.closest('.log') && !e.target.closest('.search-results') && !e.target.closest('.overview-detail')) {
         e.preventDefault();
       }
     }, { passive: false });
@@ -645,7 +795,7 @@
       promptIcon.style.justifyContent = 'center';
     }
 
-    // ── BADGE SCAN (Step 1) ──
+    // ── BADGE SCAN ──
     badgeInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -671,7 +821,7 @@
       }
     });
 
-    // ── CHOOSE MODE (Step 2) ──
+    // ── CHOOSE MODE ──
     function startMode(mode) {
       currentMode = mode;
       currentTrailer = '';
@@ -694,13 +844,16 @@
       } else if (mode === 'depal') {
         pageTitle.textContent = 'Depalletise';
         enterScanner();
+      } else if (mode === 'overview') {
+        pageTitle.textContent = 'Dropzone Overview';
+        loadOverview();
       } else {
         pageTitle.textContent = 'Inbound Move';
         enterScanner();
       }
     }
 
-    // ── HOME (logo button) ──
+    // ── HOME ──
     function goHome() {
       if (!currentUser) return;
       currentPallet = '';
@@ -737,11 +890,11 @@
 
     // ── AUTO FOCUS ──
     document.addEventListener('click', function(e) {
-      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.logout-btn')) return;
+      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.logout-btn') || e.target.closest('.zone-card')) return;
       autoFocus();
     });
     document.addEventListener('touchstart', function(e) {
-      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.logout-btn')) return;
+      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.logout-btn') || e.target.closest('.zone-card')) return;
       autoFocus();
     });
     setInterval(autoFocus, 2000);
@@ -758,7 +911,7 @@
       else if (searchScreen.classList.contains('active')) searchInput.focus();
     }
 
-    // ── TRAILER SCAN (Step 3, Receive only) ──
+    // ── TRAILER SCAN ──
     trailerInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -778,7 +931,7 @@
       }
     });
 
-    // ── ENTER SCANNER (Step 4) ──
+    // ── ENTER SCANNER ──
     function enterScanner() {
       scanCount = 0;
       logEl.innerHTML = '';
@@ -825,7 +978,6 @@
       }
     });
 
-    // ── RECEIVE SCAN ──
     function handleReceiveScan(value) {
       if (isDropzone(value)) {
         setStatus('❌ Invalid Pallet ID', 'error');
@@ -853,7 +1005,6 @@
       setStatus('Scan Pallet', 'ready');
     }
 
-    // ── DEPALLETISE SCAN ──
     function handleDepalScan(value) {
       if (isDropzone(value)) {
         setStatus('❌ Invalid Pallet ID', 'error');
@@ -880,7 +1031,6 @@
       setStatus('Scan Pallet', 'depal');
     }
 
-    // ── DROPZONE SCAN ──
     function handleDropzoneScan(value) {
       if (scanStep === 'pallet') {
         if (isDropzone(value)) {
@@ -936,7 +1086,6 @@
       setStatus(currentPallet, 'offline');
     }
 
-    // ── SUBMIT SCAN ──
     function submitScan(palletId, dropzone) {
       scanCount++;
       scanCountEl.textContent = scanCount + ' scans';
@@ -959,7 +1108,6 @@
       addLogEntry(entry, 'pending');
       setStatus('Sending: ' + palletId + ' → ' + dropzone, 'ready');
 
-      // Send to Power Automate (SharePoint)
       fetch(PA_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -996,14 +1144,13 @@
         }, 3000);
       });
 
-      // Also send to Google Sheets (search mirror)
       fetch(GS_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(entry)
       }).catch(function() {
-        console.log('Google Sheets mirror failed — search may be incomplete');
+        console.log('Google Sheets mirror failed');
       });
 
       if (currentMode === 'receive') {
@@ -1024,7 +1171,7 @@
       }
     }
 
-    // ── SEARCH HANDLER ──
+    // ── SEARCH ──
     searchInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -1121,6 +1268,94 @@
         searchResults.innerHTML = '<div class="search-no-results">Search failed. Check connection and try again.</div>';
         playError();
       });
+    }
+
+    // ── OVERVIEW ──
+    function loadOverview() {
+      showScreen('overviewScreen');
+      overviewStatus.textContent = 'Loading overview...';
+      overviewStatus.className = 'overview-status loading';
+      overviewDetail.classList.remove('visible');
+
+      // Reset counts
+      document.getElementById('countLIFT').textContent = '-';
+      document.getElementById('countCHILLER').textContent = '-';
+      document.getElementById('countFREEZER').textContent = '-';
+      document.getElementById('countHRV').textContent = '-';
+
+      // Clear selected state
+      var cards = document.querySelectorAll('.zone-card');
+      for (var i = 0; i < cards.length; i++) {
+        cards[i].classList.remove('selected');
+      }
+
+      fetch(GS_URL + '?overviewMode=true')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!data.overview) {
+          overviewStatus.textContent = '❌ No data available';
+          overviewStatus.className = 'overview-status error';
+          return;
+        }
+
+        overviewData = data.overview;
+
+        // Count active pallets per zone
+        var zones = ['LIFT', 'CHILLER', 'FREEZER', 'HRV'];
+        var total = 0;
+        for (var z = 0; z < zones.length; z++) {
+          var zone = zones[z];
+          var count = overviewData[zone] ? overviewData[zone].length : 0;
+          document.getElementById('count' + zone).textContent = count;
+          total += count;
+        }
+
+        overviewStatus.textContent = total + ' pallets across dropzones';
+        overviewStatus.className = 'overview-status ready';
+      })
+      .catch(function() {
+        overviewStatus.textContent = '❌ Failed to load overview';
+        overviewStatus.className = 'overview-status error';
+      });
+    }
+
+    function showZoneDetail(zone) {
+      // Highlight selected card
+      var cards = document.querySelectorAll('.zone-card');
+      for (var i = 0; i < cards.length; i++) {
+        cards[i].classList.remove('selected');
+      }
+      event.currentTarget.classList.add('selected');
+
+      var pallets = overviewData[zone] || [];
+
+      overviewDetailHeader.textContent = zone + ' — ' + pallets.length + ' pallets';
+
+      if (pallets.length === 0) {
+        overviewDetailContent.innerHTML = '<div class="overview-empty">No pallets in ' + zone + '</div>';
+      } else {
+        var html = '<table>';
+        html += '<tr><th>Pallet ID</th><th>Alias</th><th>Time</th><th>Delta</th></tr>';
+
+        for (var i = 0; i < pallets.length; i++) {
+          var p = pallets[i];
+          var alias = lookupAlias(p.user);
+          var displayTime = formatSearchTime(p.timestamp);
+          var delta = p.delta || '';
+
+          html += '<tr>';
+          html += '<td style="font-family:monospace;font-size:0.7rem;">' + p.palletId + '</td>';
+          html += '<td>' + alias + '</td>';
+          html += '<td>' + displayTime + '</td>';
+          html += '<td>' + delta + '</td>';
+          html += '</tr>';
+        }
+
+        html += '</table>';
+        overviewDetailContent.innerHTML = html;
+      }
+
+      overviewDetail.classList.add('visible');
     }
 
     function formatSearchTime(ts) {
