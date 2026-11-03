@@ -186,83 +186,6 @@
       min-height: 1.2em;
     }
 
-    /* CATEGORY SELECTION SCREEN */
-    .category-screen {
-      justify-content: center;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .category-screen .mode-label {
-      font-size: 1rem;
-      font-weight: bold;
-      padding: 6px 16px;
-      border-radius: 20px;
-      margin-bottom: 8px;
-      background: #1b9c5a;
-    }
-
-    .category-screen p {
-      color: #aaa;
-      font-size: 1rem;
-      text-align: center;
-      margin-bottom: 4px;
-    }
-
-    .category-btn {
-      width: 80%;
-      padding: 20px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 12px;
-      color: #fff;
-      cursor: pointer;
-      text-align: center;
-    }
-
-    .category-btn.core { background: #1b9c5a; }
-    .category-btn.core:active { background: #22b86b; }
-    .category-btn.chilled { background: #0f3460; }
-    .category-btn.chilled:active { background: #1a4a7a; }
-    .category-btn.hrv { background: #f58840; }
-    .category-btn.hrv:active { background: #d97530; }
-
-    .category-btn .sla-note {
-      font-size: 0.7rem;
-      font-weight: normal;
-      opacity: 0.8;
-      display: block;
-      margin-top: 4px;
-    }
-
-    /* CATEGORY TOGGLE ON RECEIVE SCREEN */
-    .category-toggle {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 8px;
-    }
-
-    .toggle-btn {
-      padding: 6px 12px;
-      font-size: 0.75rem;
-      font-weight: bold;
-      border: none;
-      color: #fff;
-      cursor: pointer;
-      opacity: 0.4;
-      transition: opacity 0.2s;
-    }
-
-    .toggle-btn:first-child { border-radius: 8px 0 0 8px; }
-    .toggle-btn:last-child { border-radius: 0 8px 8px 0; }
-
-    .toggle-btn.active { opacity: 1; }
-
-    .toggle-btn.core { background: #1b9c5a; }
-    .toggle-btn.chilled { background: #0f3460; }
-    .toggle-btn.hrv { background: #f58840; }
-
     .scan-input-hidden {
       position: absolute;
       left: -9999px;
@@ -512,24 +435,6 @@
     <div class="trailer-error" id="trailerError"></div>
   </div>
 
-  <!-- STEP 3b (Receive only): Choose category -->
-  <div class="screen category-screen" id="categoryScreen">
-    <div class="mode-label">📥 Receive</div>
-    <p>Select Category</p>
-    <button class="category-btn core" onclick="selectCategory('Core/Ambient')">
-      🟢 Core / Ambient
-      <span class="sla-note">No time requirement</span>
-    </button>
-    <button class="category-btn chilled" onclick="selectCategory('Chilled/Frozen')">
-      🔵 Chilled / Frozen
-      <span class="sla-note">30 min SLA</span>
-    </button>
-    <button class="category-btn hrv" onclick="selectCategory('HRV')">
-      🟠 HRV
-      <span class="sla-note">2 hour SLA</span>
-    </button>
-  </div>
-
   <!-- STEP 4: Scanner screen -->
   <div class="screen" id="scannerScreen">
     <div class="user-bar">
@@ -537,13 +442,6 @@
         <div>User: <span class="name" id="userName"></span></div>
         <div id="trailerDisplay"></div>
       </div>
-    </div>
-
-    <!-- Category toggle (Receive mode only) -->
-    <div class="category-toggle" id="categoryToggle" style="display:none;">
-      <button class="toggle-btn core" onclick="switchCategory('Core/Ambient')">Core</button>
-      <button class="toggle-btn chilled" onclick="switchCategory('Chilled/Frozen')">Chilled</button>
-      <button class="toggle-btn hrv" onclick="switchCategory('HRV')">HRV</button>
     </div>
 
     <div class="step-indicator" id="stepIndicator">
@@ -599,7 +497,6 @@
     var GS_URL = 'https://script.google.com/macros/s/AKfycby1dfA3thazUN6o28UzCQpGmJMdO3hSaJTggHX0E3HGQpLBCydDhKAixW-xnJPCO44/exec';
     var OFFLINE_KEY = 'dropzone_offline_queue';
     var VALID_DROPZONES = ['LIFT', 'CHILLER', 'FREEZER', 'HRV'];
-    var CATEGORIES = ['Core/Ambient', 'Chilled/Frozen', 'HRV'];
     var pageTitle = document.getElementById('pageTitle');
 
     // ── SOUND EFFECTS ──
@@ -675,7 +572,6 @@
     var currentUserDisplay = '';
     var currentPallet = '';
     var currentTrailer = '';
-    var currentCategory = '';
     var scanCount = 0;
     var scanStep = 'pallet';
     var statusTimer = null;
@@ -699,7 +595,6 @@
     var searchResults  = document.getElementById('searchResults');
     var searchTrailerBox   = document.getElementById('searchTrailerBox');
     var searchTrailerValue = document.getElementById('searchTrailerValue');
-    var categoryToggle = document.getElementById('categoryToggle');
 
     // Prevent all scrolling except log and search results
     document.addEventListener('touchmove', function(e) {
@@ -745,28 +640,6 @@
       promptIcon.style.justifyContent = 'center';
     }
 
-    // ── CATEGORY TOGGLE ──
-    function updateCategoryToggle() {
-      var buttons = categoryToggle.querySelectorAll('.toggle-btn');
-      for (var i = 0; i < buttons.length; i++) {
-        buttons[i].classList.remove('active');
-      }
-      if (currentCategory === 'Core/Ambient') buttons[0].classList.add('active');
-      else if (currentCategory === 'Chilled/Frozen') buttons[1].classList.add('active');
-      else if (currentCategory === 'HRV') buttons[2].classList.add('active');
-    }
-
-    function switchCategory(cat) {
-      currentCategory = cat;
-      updateCategoryToggle();
-      scanInput.focus();
-    }
-
-    function selectCategory(cat) {
-      currentCategory = cat;
-      enterScanner();
-    }
-
     // ── BADGE SCAN (Step 1) ──
     badgeInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
@@ -797,7 +670,6 @@
     function startMode(mode) {
       currentMode = mode;
       currentTrailer = '';
-      currentCategory = '';
 
       if (mode === 'receive') {
         pageTitle.textContent = 'Inbound Receive';
@@ -825,7 +697,6 @@
       if (!currentUser) return;
       currentPallet = '';
       currentTrailer = '';
-      currentCategory = '';
       scanCount = 0;
       scanStep = 'pallet';
       logEl.innerHTML = '';
@@ -843,7 +714,6 @@
       currentMode = '';
       currentPallet = '';
       currentTrailer = '';
-      currentCategory = '';
       scanCount = 0;
       scanStep = 'pallet';
       logEl.innerHTML = '';
@@ -859,11 +729,11 @@
 
     // ── AUTO FOCUS ──
     document.addEventListener('click', function(e) {
-      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.logout-btn') || e.target.closest('.category-btn') || e.target.closest('.toggle-btn')) return;
+      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.logout-btn')) return;
       autoFocus();
     });
     document.addEventListener('touchstart', function(e) {
-      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.logout-btn') || e.target.closest('.category-btn') || e.target.closest('.toggle-btn')) return;
+      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.logout-btn')) return;
       autoFocus();
     });
     setInterval(autoFocus, 2000);
@@ -896,10 +766,7 @@
 
         trailerError.textContent = '';
         currentTrailer = trailer;
-
-        // Show category selection screen
-        pageTitle.textContent = 'Inbound Receive';
-        showScreen('categoryScreen');
+        enterScanner();
       }
     });
 
@@ -914,15 +781,12 @@
           'Trailer: <span class="trailer-id">' + abbreviateTrailer(currentTrailer) + '</span>';
         document.getElementById('stepIndicator').style.display = 'none';
         document.getElementById('logTitle').textContent = 'Receive Log';
-        categoryToggle.style.display = 'flex';
-        updateCategoryToggle();
         setReceivePalletStep();
       } else {
         document.getElementById('trailerDisplay').innerHTML = '';
         document.getElementById('stepIndicator').style.display = 'flex';
         stepDropzone.style.display = '';
         document.getElementById('logTitle').textContent = 'Movement Log';
-        categoryToggle.style.display = 'none';
         setPalletStep();
       }
 
@@ -1044,8 +908,7 @@
         dropzone: dropzone,
         timestamp: timestamp,
         user: currentUser,
-        trailerId: currentTrailer || '',
-        category: currentCategory || ''
+        trailerId: currentTrailer || ''
       };
 
       addLogEntry(entry, 'pending');
