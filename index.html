@@ -501,7 +501,9 @@
 
     // ── SOUND EFFECTS ──
     var successSound = new Audio('sounds/success.m4a');
+    successSound.volume = 0.7;
     var errorSound = new Audio('sounds/error.m4a');
+    errorSound.volume = 0.7;
 
     function playSuccess() {
       successSound.currentTime = 0;
