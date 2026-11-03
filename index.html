@@ -97,10 +97,28 @@
     .home-btn.dropzone:active { background: #1a4a7a; }
     .home-btn.depal { background: #8e44ad; }
     .home-btn.depal:active { background: #7d3c98; }
-    .home-btn.search { background: #f58840; }
-    .home-btn.search:active { background: #d97530; }
-    .home-btn.overview { background: #2c3e50; }
-    .home-btn.overview:active { background: #34495e; }
+
+    .home-bottom-row {
+      display: flex;
+      width: 80%;
+      gap: 12px;
+    }
+
+    .home-btn-small {
+      flex: 1;
+      padding: 14px;
+      font-size: 1.5rem;
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .home-btn-small.search { background: #f58840; }
+    .home-btn-small.search:active { background: #d97530; }
+    .home-btn-small.overview { background: #2c3e50; }
+    .home-btn-small.overview:active { background: #34495e; }
 
     .home-footer {
       position: absolute;
@@ -539,8 +557,10 @@
     <button class="home-btn receive" onclick="startMode('receive')">📥 Receive</button>
     <button class="home-btn dropzone" onclick="startMode('dropzone')">📍 Dropzone</button>
     <button class="home-btn depal" onclick="startMode('depal')">📦 Depalletise</button>
-    <button class="home-btn search" onclick="startMode('search')">🔍 Search</button>
-    <button class="home-btn overview" onclick="startMode('overview')">📊 Overview</button>
+    <div class="home-bottom-row">
+      <button class="home-btn-small search" onclick="startMode('search')">🔍</button>
+      <button class="home-btn-small overview" onclick="startMode('overview')">📊</button>
+    </div>
     <div class="home-footer">
       <span class="home-user" id="homeUserName"></span>
       <button class="logout-btn" onclick="logout()">Logout</button>
@@ -890,11 +910,11 @@
 
     // ── AUTO FOCUS ──
     document.addEventListener('click', function(e) {
-      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.logout-btn') || e.target.closest('.zone-card')) return;
+      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.home-btn-small') || e.target.closest('.logout-btn') || e.target.closest('.zone-card')) return;
       autoFocus();
     });
     document.addEventListener('touchstart', function(e) {
-      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.logout-btn') || e.target.closest('.zone-card')) return;
+      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.home-btn-small') || e.target.closest('.logout-btn') || e.target.closest('.zone-card')) return;
       autoFocus();
     });
     setInterval(autoFocus, 2000);
@@ -1277,13 +1297,11 @@
       overviewStatus.className = 'overview-status loading';
       overviewDetail.classList.remove('visible');
 
-      // Reset counts
       document.getElementById('countLIFT').textContent = '-';
       document.getElementById('countCHILLER').textContent = '-';
       document.getElementById('countFREEZER').textContent = '-';
       document.getElementById('countHRV').textContent = '-';
 
-      // Clear selected state
       var cards = document.querySelectorAll('.zone-card');
       for (var i = 0; i < cards.length; i++) {
         cards[i].classList.remove('selected');
@@ -1300,7 +1318,6 @@
 
         overviewData = data.overview;
 
-        // Count active pallets per zone
         var zones = ['LIFT', 'CHILLER', 'FREEZER', 'HRV'];
         var total = 0;
         for (var z = 0; z < zones.length; z++) {
@@ -1320,7 +1337,6 @@
     }
 
     function showZoneDetail(zone) {
-      // Highlight selected card
       var cards = document.querySelectorAll('.zone-card');
       for (var i = 0; i < cards.length; i++) {
         cards[i].classList.remove('selected');
