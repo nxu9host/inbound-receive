@@ -499,6 +499,20 @@
     var VALID_DROPZONES = ['LIFT', 'CHILLER', 'FREEZER', 'HRV'];
     var pageTitle = document.getElementById('pageTitle');
 
+    // ── SOUND EFFECTS ──
+    var successSound = new Audio('sounds/success.m4a');
+    var errorSound = new Audio('sounds/error.m4a');
+
+    function playSuccess() {
+      successSound.currentTime = 0;
+      successSound.play().catch(function() {});
+    }
+
+    function playError() {
+      errorSound.currentTime = 0;
+      errorSound.play().catch(function() {});
+    }
+
     // ── ROSTER LOOKUP ──
     var roster = {};
 
@@ -636,6 +650,7 @@
 
         if (!isValidBadge(badge)) {
           loginError.textContent = '❌ Invalid ID';
+          playError();
           return;
         }
 
@@ -745,6 +760,7 @@
 
         if (!isValidTrailer(trailer)) {
           trailerError.textContent = '❌ Invalid Transhipment ID';
+          playError();
           return;
         }
 
@@ -797,10 +813,12 @@
     function handleReceiveScan(value) {
       if (isDropzone(value)) {
         setStatus('❌ Invalid Pallet ID', 'error');
+        playError();
         return;
       }
       if (!isValidPallet(value)) {
         setStatus('❌ Invalid Pallet', 'error');
+        playError();
         return;
       }
       submitScan(value, 'RECEIVE');
@@ -823,10 +841,12 @@
       if (scanStep === 'pallet') {
         if (isDropzone(value)) {
           setStatus('❌ No pallet selected for move', 'error');
+          playError();
           return;
         }
         if (!isValidPallet(value)) {
           setStatus('❌ Invalid Pallet', 'error');
+          playError();
           return;
         }
         currentPallet = value;
@@ -835,6 +855,7 @@
       } else if (scanStep === 'dropzone') {
         if (!isDropzone(value)) {
           setStatus('❌ Invalid Dropzone', 'error');
+          playError();
           return;
         }
         submitScan(currentPallet, value);
@@ -903,6 +924,7 @@
         if (r.ok || r.status === 202) {
           updateLogEntry(palletId, timestamp, 'sent');
           setStatus('✓ ' + palletId + ' → ' + dropzone, 'success');
+          playSuccess();
           if (statusTimer) clearTimeout(statusTimer);
           statusTimer = setTimeout(function() {
             setStatus('Scan Pallet', 'ready');
@@ -958,6 +980,7 @@
         if (!isValidPallet(value)) {
           searchStatus.textContent = '❌ Invalid Pallet';
           searchStatus.className = 'search-status error';
+          playError();
           return;
         }
 
@@ -979,6 +1002,7 @@
           searchStatus.className = 'search-status error';
           searchTrailerBox.style.display = 'none';
           searchResults.innerHTML = '<div class="search-no-results">No entries found for this pallet</div>';
+          playError();
           return;
         }
 
@@ -997,6 +1021,7 @@
         // Green success bar with tick and pallet ID
         searchStatus.textContent = '✓ ' + palletId;
         searchStatus.className = 'search-status success';
+        playSuccess();
 
         // Show trailer box
         if (receiveTrailer) {
@@ -1044,6 +1069,7 @@
         searchStatus.className = 'search-status error';
         searchTrailerBox.style.display = 'none';
         searchResults.innerHTML = '<div class="search-no-results">Search failed. Check connection and try again.</div>';
+        playError();
       });
     }
 
