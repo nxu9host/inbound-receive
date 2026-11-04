@@ -571,9 +571,9 @@
   </div>
 
   <div class="screen home-screen" id="homeScreen">
-    <button class="home-btn receive" onclick="startMode('receive')">📥 Receive</button>
-    <button class="home-btn dropzone" onclick="startMode('dropzone')">📍 Dropzone</button>
-    <button class="home-btn depal" onclick="startMode('depal')">📦 Depalletise</button>
+    <button class="home-btn receive" onclick="startMode('receive')">Receive</button>
+    <button class="home-btn dropzone" onclick="startMode('dropzone')">Dropzone</button>
+    <button class="home-btn depal" onclick="startMode('depal')">Depalletise</button>
     <div class="home-bottom-row">
       <button class="home-btn-small search" onclick="startMode('search')">🔍</button>
       <button class="home-btn-small overview" onclick="startMode('overview')">📊</button>
@@ -585,7 +585,7 @@
   </div>
 
   <div class="screen trailer-screen" id="trailerScreen">
-    <div class="mode-label">📥 Receive</div>
+    <div class="mode-label">Receive</div>
     <img src="images/truck.png" alt="Scan Trailer" class="truck-img">
     <p>Scan Transhipment ID</p>
     <input type="text" class="scan-input-hidden" id="trailerInput"
@@ -626,7 +626,7 @@
   </div>
 
   <div class="screen search-screen" id="searchScreen">
-    <div class="mode-label">🔍 Container Search</div>
+    <div class="mode-label">Container Search</div>
 
     <div class="search-prompt" id="searchPrompt">
       <div class="icon">
@@ -653,7 +653,7 @@
 
     <div class="overview-grid" id="overviewGrid">
       <div class="zone-card zone-receive full-width" id="cardRECEIVE" onclick="openZoneDetail('RECEIVE')">
-        <div class="zone-name">📥 RECEIVE</div>
+        <div class="zone-name">RECEIVE</div>
         <div class="zone-count" id="countRECEIVE">-</div>
       </div>
       <div class="zone-card zone-lift" id="cardLIFT" onclick="openZoneDetail('LIFT')">
@@ -674,11 +674,11 @@
       </div>
     </div>
 
-    <div class="overview-footer" id="overviewDepal" onclick="loadDepalDetail()">📦 Depalletised today: -</div>
+    <div class="overview-footer" id="overviewDepal" onclick="loadDepalDetail()">Depalletised today: -</div>
   </div>
 
   <div class="screen depal-detail-screen" id="depalDetailScreen">
-    <div class="depal-detail-status" id="depalDetailStatus">📦 Depalletised Today</div>
+    <div class="depal-detail-status" id="depalDetailStatus">Depalletised Today</div>
     <div class="depal-detail-list" id="depalDetailList">
       <div class="depal-detail-empty">Loading...</div>
     </div>
@@ -1207,7 +1207,7 @@
       showScreen('overviewScreen');
       overviewStatus.textContent = 'Loading overview...';
       overviewStatus.className = 'overview-status loading';
-      overviewDepal.textContent = '📦 Depalletised today: -';
+      overviewDepal.textContent = 'Depalletised today: -';
 
       for (var z = 0; z < ZONE_ORDER.length; z++) {
         document.getElementById('count' + ZONE_ORDER[z]).textContent = '-';
@@ -1249,7 +1249,7 @@
 
         overviewStatus.textContent = total + ' pallets across zones';
         overviewStatus.className = 'overview-status ready';
-        overviewDepal.textContent = '📦 Depalletised today: ' + depalCount;
+        overviewDepal.textContent = 'Depalletised today: ' + depalCount;
       })
       .catch(function() {
         overviewStatus.textContent = '❌ Failed to load overview';
@@ -1260,19 +1260,19 @@
     function loadDepalDetail() {
       pageTitle.textContent = 'Depalletised Today';
       showScreen('depalDetailScreen');
-      depalDetailStatus.textContent = '📦 Loading...';
+      depalDetailStatus.textContent = 'Loading...';
       depalDetailList.innerHTML = '<div class="depal-detail-empty">Loading...</div>';
 
       fetch(GS_URL + '?depalMode=true')
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (!data.results || data.results.length === 0) {
-          depalDetailStatus.textContent = '📦 Depalletised Today: 0';
+          depalDetailStatus.textContent = 'Depalletised Today: 0';
           depalDetailList.innerHTML = '<div class="depal-detail-empty">No pallets depalletised today</div>';
           return;
         }
 
-        depalDetailStatus.textContent = '📦 Depalletised Today: ' + data.results.length;
+        depalDetailStatus.textContent = 'Depalletised Today: ' + data.results.length;
 
         var html = '<table><tr><th>Pallet ID</th><th>From</th><th>Alias</th><th>Time</th></tr>';
 
@@ -1292,4 +1292,151 @@
         html += '</table>';
         depalDetailList.innerHTML = html;
       })
-      .catch(function()
+      .catch(function() {
+        depalDetailStatus.textContent = 'Failed to load';
+        depalDetailList.innerHTML = '<div class="depal-detail-empty">Failed to load. Try again.</div>';
+      });
+    }
+
+    function openZoneDetail(zone) {
+      currentZoneIndex = ZONE_ORDER.indexOf(zone);
+      pageTitle.textContent = 'Dropzone Overview';
+      showScreen('zoneDetailScreen');
+      renderZoneDetail();
+    }
+
+    function cycleZone(direction) {
+      currentZoneIndex = (currentZoneIndex + direction + ZONE_ORDER.length) % ZONE_ORDER.length;
+      renderZoneDetail();
+    }
+
+    function renderZoneDetail() {
+      var zone = ZONE_ORDER[currentZoneIndex];
+      var pallets = overviewData[zone] || [];
+
+      zoneNavName.textContent = zone;
+      zoneNavName.className = 'zone-nav-name';
+      zoneDetailCount.textContent = pallets.length + ' pallet' + (pallets.length !== 1 ? 's' : '');
+
+      if (pallets.length === 0) {
+        zoneDetailList.innerHTML = '<div class="zone-detail-empty">No pallets in ' + zone + '</div>';
+      } else {
+        var html = '<table><tr><th>Pallet ID</th><th>Alias</th><th>Time</th><th>Dwell</th></tr>';
+
+        for (var i = 0; i < pallets.length; i++) {
+          var p = pallets[i];
+          var alias = lookupAlias(p.user);
+          var displayTime = formatSearchTime(p.timestamp);
+          var mins = calcLiveDwell(p.timestamp);
+          var dwellText = (mins >= 0) ? formatDwell(mins) : '';
+          var dwClass = (mins >= 0) ? dwellClass(mins) : '';
+
+          html += '<tr>';
+          html += '<td style="font-family:monospace;font-size:0.7rem;">' + p.palletId + '</td>';
+          html += '<td>' + alias + '</td>';
+          html += '<td>' + displayTime + '</td>';
+          html += '<td class="' + dwClass + '">' + dwellText + '</td>';
+          html += '</tr>';
+        }
+
+        html += '</table>';
+        zoneDetailList.innerHTML = html;
+      }
+    }
+
+    function formatSearchTime(ts) {
+      if (!ts) return '';
+      ts = String(ts).trim();
+      var parts = ts.split(' ');
+      if (parts.length >= 2) {
+        var dateBits = parts[0].split('/');
+        var timeBits = parts[1];
+        if (dateBits.length === 3 && timeBits) return timeBits + ' ' + dateBits[2] + '/' + dateBits[1];
+      }
+      var d = new Date(ts);
+      if (!isNaN(d.getTime())) {
+        return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ' ' + String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
+      }
+      return ts;
+    }
+
+    function parseTimestamp(ts) {
+      if (!ts) return null;
+      ts = String(ts).trim();
+      var parts = ts.split(' ');
+      if (parts.length >= 2) {
+        var dateParts = parts[0].split('/');
+        var timeParts = parts[1].split(':');
+        if (dateParts.length === 3 && timeParts.length >= 2) {
+          return new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]), parseInt(timeParts[0]), parseInt(timeParts[1]));
+        }
+      }
+      var d = new Date(ts);
+      if (!isNaN(d.getTime())) return d;
+      return null;
+    }
+
+    function queueOffline(entry) {
+      var queue = JSON.parse(localStorage.getItem(OFFLINE_KEY) || '[]');
+      queue.push(entry);
+      localStorage.setItem(OFFLINE_KEY, JSON.stringify(queue));
+    }
+
+    function flushOffline() {
+      var queue = JSON.parse(localStorage.getItem(OFFLINE_KEY) || '[]');
+      if (queue.length === 0) return;
+      var remaining = [];
+      var sent = 0;
+
+      queue.forEach(function(entry) {
+        fetch(PA_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entry)
+        })
+        .then(function(r) {
+          if (r.ok || r.status === 202) sent++;
+          else remaining.push(entry);
+        })
+        .catch(function() { remaining.push(entry); })
+        .finally(function() {
+          if (sent + remaining.length === queue.length) {
+            localStorage.setItem(OFFLINE_KEY, JSON.stringify(remaining));
+            if (sent > 0) setStatus('✓ Synced ' + sent + ' offline scans', 'success');
+          }
+        });
+      });
+    }
+
+    setInterval(flushOffline, 30000);
+
+    function setStatus(message, type) {
+      statusEl.textContent = message;
+      statusEl.className = 'status ' + type;
+    }
+
+    function addLogEntry(entry, state) {
+      var div = document.createElement('div');
+      div.className = 'log-entry ' + state;
+      div.dataset.palletId = entry.palletId;
+      div.dataset.time = entry.timestamp;
+      div.innerHTML = '<span class="barcode">' + entry.palletId + '</span><span>' + entry.dropzone + '</span><span class="time">' + entry.timestamp.split(' ')[1] + '</span>';
+      logEl.insertBefore(div, logEl.firstChild);
+      while (logEl.children.length > 50) logEl.removeChild(logEl.lastChild);
+    }
+
+    function updateLogEntry(palletId, time, state) {
+      var entries = logEl.querySelectorAll('.log-entry');
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].dataset.palletId === palletId && entries[i].dataset.time === time) {
+          entries[i].className = 'log-entry ' + state;
+          break;
+        }
+      }
+    }
+
+    badgeInput.focus();
+  </script>
+</body>
+</html>
+
