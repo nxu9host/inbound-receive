@@ -394,18 +394,6 @@
       gap: 8px;
     }
 
-    .overview-status {
-      text-align: center;
-      font-size: 1rem;
-      font-weight: 500;
-      padding: 8px;
-      border-radius: 6px;
-    }
-
-    .overview-status.loading { background: #f58840; }
-    .overview-status.ready { background: #0f3460; }
-    .overview-status.error { background: #e94560; }
-
     .overview-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -440,7 +428,7 @@
       text-align: center;
       font-size: 0.9rem;
       font-weight: 500;
-      padding: 8px;
+      padding: 10px;
       border-radius: 6px;
       background: #8e44ad;
       margin-top: 4px;
@@ -649,8 +637,6 @@
   </div>
 
   <div class="screen overview-screen" id="overviewScreen">
-    <div class="overview-status loading" id="overviewStatus">Loading overview...</div>
-
     <div class="overview-grid" id="overviewGrid">
       <div class="zone-card zone-receive full-width" id="cardRECEIVE" onclick="openZoneDetail('RECEIVE')">
         <div class="zone-name">RECEIVE</div>
@@ -793,7 +779,6 @@
     var searchResults = document.getElementById('searchResults');
     var searchTrailerBox = document.getElementById('searchTrailerBox');
     var searchTrailerValue = document.getElementById('searchTrailerValue');
-    var overviewStatus = document.getElementById('overviewStatus');
     var overviewDepal = document.getElementById('overviewDepal');
     var depalDetailStatus = document.getElementById('depalDetailStatus');
     var depalDetailList = document.getElementById('depalDetailList');
@@ -1205,8 +1190,6 @@
 
     function loadOverview() {
       showScreen('overviewScreen');
-      overviewStatus.textContent = 'Loading overview...';
-      overviewStatus.className = 'overview-status loading';
       overviewDepal.textContent = 'Depalletised today: -';
 
       for (var z = 0; z < ZONE_ORDER.length; z++) {
@@ -1218,11 +1201,10 @@
       fetch(GS_URL + '?overviewMode=true')
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        if (!data.overview) { overviewStatus.textContent = '❌ No data available'; overviewStatus.className = 'overview-status error'; return; }
+        if (!data.overview) return;
 
         overviewData = data.overview;
         depalCount = data.depalToday || 0;
-        var total = 0;
 
         for (var z = 0; z < ZONE_ORDER.length; z++) {
           var zone = ZONE_ORDER[z];
@@ -1238,22 +1220,16 @@
           });
           overviewData[zone] = pallets;
 
-          var count = pallets.length;
-          document.getElementById('count' + zone).textContent = count;
+          document.getElementById('count' + zone).textContent = pallets.length;
 
           var extraClass = (zone === 'RECEIVE') ? ' full-width' : '';
           document.getElementById('card' + zone).className = 'zone-card ' + ZONE_CLASSES[zone] + extraClass;
-
-          total += count;
         }
 
-        overviewStatus.textContent = total + ' pallets across zones';
-        overviewStatus.className = 'overview-status ready';
         overviewDepal.textContent = 'Depalletised today: ' + depalCount;
       })
       .catch(function() {
-        overviewStatus.textContent = '❌ Failed to load overview';
-        overviewStatus.className = 'overview-status error';
+        overviewDepal.textContent = 'Depalletised today: ❌';
       });
     }
 
