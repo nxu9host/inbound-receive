@@ -430,10 +430,62 @@
     .zone-card .zone-name { font-size: 1rem; font-weight: bold; margin-bottom: 6px; }
     .zone-card .zone-count { font-size: 2rem; font-weight: bold; color: #fff; }
 
-    .zone-card.zone-healthy { background: #1b9c5a; }
-    .zone-card.zone-warning { background: #f58840; }
-    .zone-card.zone-critical { background: #e94560; }
-    .zone-card.zone-empty { background: #16213e; }
+    .zone-receive { background: #1b9c5a; }
+    .zone-lift { background: #f58840; }
+    .zone-chiller { background: #5dade2; }
+    .zone-freezer { background: #0f3460; }
+    .zone-hrv { background: #e94560; }
+
+    .overview-footer {
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 8px;
+      border-radius: 6px;
+      background: #8e44ad;
+      margin-top: 4px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .overview-footer:active { opacity: 0.8; }
+
+    .depal-detail-screen {
+      justify-content: flex-start;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .depal-detail-status {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 8px;
+      border-radius: 6px;
+      background: #8e44ad;
+    }
+
+    .depal-detail-list {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      background: #16213e;
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .depal-detail-list table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+    .depal-detail-list th { background: #0f3460; padding: 6px 4px; text-align: center; position: sticky; top: 0; }
+    .depal-detail-list td { padding: 5px 4px; border-bottom: 1px solid #1a1a2e; text-align: center; }
+    .depal-detail-list tr:nth-child(even) { background: #1a1a2e; }
+
+    .depal-detail-empty {
+      text-align: center;
+      color: #888;
+      padding: 20px;
+      font-size: 0.9rem;
+    }
 
     .zone-detail-screen {
       justify-content: flex-start;
@@ -600,26 +652,35 @@
     <div class="overview-status loading" id="overviewStatus">Loading overview...</div>
 
     <div class="overview-grid" id="overviewGrid">
-      <div class="zone-card zone-empty full-width" id="cardRECEIVE" onclick="openZoneDetail('RECEIVE')">
+      <div class="zone-card zone-receive full-width" id="cardRECEIVE" onclick="openZoneDetail('RECEIVE')">
         <div class="zone-name">📥 RECEIVE</div>
         <div class="zone-count" id="countRECEIVE">-</div>
       </div>
-      <div class="zone-card zone-empty" id="cardLIFT" onclick="openZoneDetail('LIFT')">
+      <div class="zone-card zone-lift" id="cardLIFT" onclick="openZoneDetail('LIFT')">
         <div class="zone-name">LIFT</div>
         <div class="zone-count" id="countLIFT">-</div>
       </div>
-      <div class="zone-card zone-empty" id="cardCHILLER" onclick="openZoneDetail('CHILLER')">
+      <div class="zone-card zone-chiller" id="cardCHILLER" onclick="openZoneDetail('CHILLER')">
         <div class="zone-name">CHILLER</div>
         <div class="zone-count" id="countCHILLER">-</div>
       </div>
-      <div class="zone-card zone-empty" id="cardFREEZER" onclick="openZoneDetail('FREEZER')">
+      <div class="zone-card zone-freezer" id="cardFREEZER" onclick="openZoneDetail('FREEZER')">
         <div class="zone-name">FREEZER</div>
         <div class="zone-count" id="countFREEZER">-</div>
       </div>
-      <div class="zone-card zone-empty" id="cardHRV" onclick="openZoneDetail('HRV')">
+      <div class="zone-card zone-hrv" id="cardHRV" onclick="openZoneDetail('HRV')">
         <div class="zone-name">HRV</div>
         <div class="zone-count" id="countHRV">-</div>
       </div>
+    </div>
+
+    <div class="overview-footer" id="overviewDepal" onclick="loadDepalDetail()">📦 Depalletised today: -</div>
+  </div>
+
+  <div class="screen depal-detail-screen" id="depalDetailScreen">
+    <div class="depal-detail-status" id="depalDetailStatus">📦 Depalletised Today</div>
+    <div class="depal-detail-list" id="depalDetailList">
+      <div class="depal-detail-empty">Loading...</div>
     </div>
   </div>
 
@@ -639,6 +700,7 @@
     var OFFLINE_KEY = 'dropzone_offline_queue';
     var VALID_DROPZONES = ['LIFT', 'CHILLER', 'FREEZER', 'HRV'];
     var ZONE_ORDER = ['RECEIVE', 'LIFT', 'CHILLER', 'FREEZER', 'HRV'];
+    var ZONE_CLASSES = { RECEIVE: 'zone-receive', LIFT: 'zone-lift', CHILLER: 'zone-chiller', FREEZER: 'zone-freezer', HRV: 'zone-hrv' };
     var pageTitle = document.getElementById('pageTitle');
 
     var successSound = new Audio('sounds/success.mp3');
@@ -700,18 +762,6 @@
       return '';
     }
 
-    function getZoneHealthClass(pallets) {
-      if (!pallets || pallets.length === 0) return 'zone-empty';
-      var maxDwell = 0;
-      for (var i = 0; i < pallets.length; i++) {
-        var mins = calcLiveDwell(pallets[i].timestamp);
-        if (mins > maxDwell) maxDwell = mins;
-      }
-      if (maxDwell >= 30) return 'zone-critical';
-      if (maxDwell >= 15) return 'zone-warning';
-      return 'zone-healthy';
-    }
-
     var currentMode = '';
     var currentUser = '';
     var currentUserDisplay = '';
@@ -721,6 +771,7 @@
     var scanStep = 'pallet';
     var statusTimer = null;
     var overviewData = {};
+    var depalCount = 0;
     var currentZoneIndex = 0;
 
     var badgeInput = document.getElementById('badgeInput');
@@ -743,12 +794,15 @@
     var searchTrailerBox = document.getElementById('searchTrailerBox');
     var searchTrailerValue = document.getElementById('searchTrailerValue');
     var overviewStatus = document.getElementById('overviewStatus');
+    var overviewDepal = document.getElementById('overviewDepal');
+    var depalDetailStatus = document.getElementById('depalDetailStatus');
+    var depalDetailList = document.getElementById('depalDetailList');
     var zoneNavName = document.getElementById('zoneNavName');
     var zoneDetailCount = document.getElementById('zoneDetailCount');
     var zoneDetailList = document.getElementById('zoneDetailList');
 
     document.addEventListener('touchmove', function(e) {
-      if (!e.target.closest('.log') && !e.target.closest('.search-results') && !e.target.closest('.zone-detail-list')) {
+      if (!e.target.closest('.log') && !e.target.closest('.search-results') && !e.target.closest('.zone-detail-list') && !e.target.closest('.depal-detail-list')) {
         e.preventDefault();
       }
     }, { passive: false });
@@ -858,11 +912,11 @@
     }
 
     document.addEventListener('click', function(e) {
-      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.home-btn-small') || e.target.closest('.logout-btn') || e.target.closest('.zone-card') || e.target.closest('.zone-nav-btn')) return;
+      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.home-btn-small') || e.target.closest('.logout-btn') || e.target.closest('.zone-card') || e.target.closest('.zone-nav-btn') || e.target.closest('.overview-footer')) return;
       autoFocus();
     });
     document.addEventListener('touchstart', function(e) {
-      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.home-btn-small') || e.target.closest('.logout-btn') || e.target.closest('.zone-card') || e.target.closest('.zone-nav-btn')) return;
+      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.home-btn-small') || e.target.closest('.logout-btn') || e.target.closest('.zone-card') || e.target.closest('.zone-nav-btn') || e.target.closest('.overview-footer')) return;
       autoFocus();
     });
     setInterval(autoFocus, 2000);
@@ -1153,10 +1207,12 @@
       showScreen('overviewScreen');
       overviewStatus.textContent = 'Loading overview...';
       overviewStatus.className = 'overview-status loading';
+      overviewDepal.textContent = '📦 Depalletised today: -';
 
       for (var z = 0; z < ZONE_ORDER.length; z++) {
         document.getElementById('count' + ZONE_ORDER[z]).textContent = '-';
-        document.getElementById('card' + ZONE_ORDER[z]).className = 'zone-card zone-empty' + (ZONE_ORDER[z] === 'RECEIVE' ? ' full-width' : '');
+        var extraClass = (ZONE_ORDER[z] === 'RECEIVE') ? ' full-width' : '';
+        document.getElementById('card' + ZONE_ORDER[z]).className = 'zone-card ' + ZONE_CLASSES[ZONE_ORDER[z]] + extraClass;
       }
 
       fetch(GS_URL + '?overviewMode=true')
@@ -1165,22 +1221,35 @@
         if (!data.overview) { overviewStatus.textContent = '❌ No data available'; overviewStatus.className = 'overview-status error'; return; }
 
         overviewData = data.overview;
+        depalCount = data.depalToday || 0;
         var total = 0;
+
         for (var z = 0; z < ZONE_ORDER.length; z++) {
           var zone = ZONE_ORDER[z];
           var pallets = overviewData[zone] || [];
+
+          pallets.sort(function(a, b) {
+            var ta = parseTimestamp(a.timestamp);
+            var tb = parseTimestamp(b.timestamp);
+            if (!ta && !tb) return 0;
+            if (!ta) return 1;
+            if (!tb) return -1;
+            return tb - ta;
+          });
+          overviewData[zone] = pallets;
+
           var count = pallets.length;
           document.getElementById('count' + zone).textContent = count;
 
-          var healthClass = getZoneHealthClass(pallets);
           var extraClass = (zone === 'RECEIVE') ? ' full-width' : '';
-          document.getElementById('card' + zone).className = 'zone-card ' + healthClass + extraClass;
+          document.getElementById('card' + zone).className = 'zone-card ' + ZONE_CLASSES[zone] + extraClass;
 
           total += count;
         }
 
         overviewStatus.textContent = total + ' pallets across zones';
         overviewStatus.className = 'overview-status ready';
+        overviewDepal.textContent = '📦 Depalletised today: ' + depalCount;
       })
       .catch(function() {
         overviewStatus.textContent = '❌ Failed to load overview';
@@ -1188,145 +1257,39 @@
       });
     }
 
-    function openZoneDetail(zone) {
-      currentZoneIndex = ZONE_ORDER.indexOf(zone);
-      pageTitle.textContent = 'Dropzone Overview';
-      showScreen('zoneDetailScreen');
-      renderZoneDetail();
-    }
+    function loadDepalDetail() {
+      pageTitle.textContent = 'Depalletised Today';
+      showScreen('depalDetailScreen');
+      depalDetailStatus.textContent = '📦 Loading...';
+      depalDetailList.innerHTML = '<div class="depal-detail-empty">Loading...</div>';
 
-    function cycleZone(direction) {
-      currentZoneIndex = (currentZoneIndex + direction + ZONE_ORDER.length) % ZONE_ORDER.length;
-      renderZoneDetail();
-    }
+      fetch(GS_URL + '?depalMode=true')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!data.results || data.results.length === 0) {
+          depalDetailStatus.textContent = '📦 Depalletised Today: 0';
+          depalDetailList.innerHTML = '<div class="depal-detail-empty">No pallets depalletised today</div>';
+          return;
+        }
 
-    function renderZoneDetail() {
-      var zone = ZONE_ORDER[currentZoneIndex];
-      var pallets = overviewData[zone] || [];
+        depalDetailStatus.textContent = '📦 Depalletised Today: ' + data.results.length;
 
-      zoneNavName.textContent = zone;
-      zoneNavName.className = 'zone-nav-name';
-      zoneDetailCount.textContent = pallets.length + ' pallet' + (pallets.length !== 1 ? 's' : '');
+        var html = '<table><tr><th>Pallet ID</th><th>From</th><th>Alias</th><th>Time</th></tr>';
 
-      if (pallets.length === 0) {
-        zoneDetailList.innerHTML = '<div class="zone-detail-empty">No pallets in ' + zone + '</div>';
-      } else {
-        var html = '<table><tr><th>Pallet ID</th><th>Alias</th><th>Time</th><th>Dwell</th></tr>';
-
-        for (var i = 0; i < pallets.length; i++) {
-          var p = pallets[i];
-          var alias = lookupAlias(p.user);
-          var displayTime = formatSearchTime(p.timestamp);
-          var mins = calcLiveDwell(p.timestamp);
-          var dwellText = (mins >= 0) ? formatDwell(mins) : '';
-          var dwClass = (mins >= 0) ? dwellClass(mins) : '';
+        for (var i = data.results.length - 1; i >= 0; i--) {
+          var row = data.results[i];
+          var alias = lookupAlias(row.user);
+          var displayTime = formatSearchTime(row.timestamp);
 
           html += '<tr>';
-          html += '<td style="font-family:monospace;font-size:0.7rem;">' + p.palletId + '</td>';
+          html += '<td style="font-family:monospace;font-size:0.7rem;">' + row.palletId + '</td>';
+          html += '<td>' + row.dropzone + '</td>';
           html += '<td>' + alias + '</td>';
           html += '<td>' + displayTime + '</td>';
-          html += '<td class="' + dwClass + '">' + dwellText + '</td>';
           html += '</tr>';
         }
 
         html += '</table>';
-        zoneDetailList.innerHTML = html;
-      }
-    }
-
-    function formatSearchTime(ts) {
-      if (!ts) return '';
-      ts = ts.trim();
-      var parts = ts.split(' ');
-      if (parts.length >= 2) {
-        var dateBits = parts[0].split('/');
-        var timeBits = parts[1];
-        if (dateBits.length === 3 && timeBits) return timeBits + ' ' + dateBits[2] + '/' + dateBits[1];
-      }
-      var d = new Date(ts);
-      if (!isNaN(d.getTime())) {
-        return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ' ' + String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
-      }
-      return ts;
-    }
-
-    function parseTimestamp(ts) {
-      if (!ts) return null;
-      ts = ts.trim();
-      var parts = ts.split(' ');
-      if (parts.length >= 2) {
-        var dateParts = parts[0].split('/');
-        var timeParts = parts[1].split(':');
-        if (dateParts.length === 3 && timeParts.length >= 2) {
-          return new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]), parseInt(timeParts[0]), parseInt(timeParts[1]));
-        }
-      }
-      var d = new Date(ts);
-      if (!isNaN(d.getTime())) return d;
-      return null;
-    }
-
-    function queueOffline(entry) {
-      var queue = JSON.parse(localStorage.getItem(OFFLINE_KEY) || '[]');
-      queue.push(entry);
-      localStorage.setItem(OFFLINE_KEY, JSON.stringify(queue));
-    }
-
-    function flushOffline() {
-      var queue = JSON.parse(localStorage.getItem(OFFLINE_KEY) || '[]');
-      if (queue.length === 0) return;
-      var remaining = [];
-      var sent = 0;
-
-      queue.forEach(function(entry) {
-        fetch(PA_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(entry)
-        })
-        .then(function(r) {
-          if (r.ok || r.status === 202) sent++;
-          else remaining.push(entry);
-        })
-        .catch(function() { remaining.push(entry); })
-        .finally(function() {
-          if (sent + remaining.length === queue.length) {
-            localStorage.setItem(OFFLINE_KEY, JSON.stringify(remaining));
-            if (sent > 0) setStatus('✓ Synced ' + sent + ' offline scans', 'success');
-          }
-        });
-      });
-    }
-
-    setInterval(flushOffline, 30000);
-
-    function setStatus(message, type) {
-      statusEl.textContent = message;
-      statusEl.className = 'status ' + type;
-    }
-
-    function addLogEntry(entry, state) {
-      var div = document.createElement('div');
-      div.className = 'log-entry ' + state;
-      div.dataset.palletId = entry.palletId;
-      div.dataset.time = entry.timestamp;
-      div.innerHTML = '<span class="barcode">' + entry.palletId + '</span><span>' + entry.dropzone + '</span><span class="time">' + entry.timestamp.split(' ')[1] + '</span>';
-      logEl.insertBefore(div, logEl.firstChild);
-      while (logEl.children.length > 50) logEl.removeChild(logEl.lastChild);
-    }
-
-    function updateLogEntry(palletId, time, state) {
-      var entries = logEl.querySelectorAll('.log-entry');
-      for (var i = 0; i < entries.length; i++) {
-        if (entries[i].dataset.palletId === palletId && entries[i].dataset.time === time) {
-          entries[i].className = 'log-entry ' + state;
-          break;
-        }
-      }
-    }
-
-    badgeInput.focus();
-  </script>
-</body>
-</html>
-
+        depalDetailList.innerHTML = html;
+      })
+      .catch(function()
