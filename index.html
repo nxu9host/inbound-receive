@@ -62,8 +62,6 @@
       outline: none;
     }
 
-    .logo-btn:focus { outline: none; }
-
     .logo-btn img {
       width: 88px;
       height: 88px;
@@ -75,7 +73,7 @@
     .home-screen {
       justify-content: center;
       align-items: center;
-      gap: 16px;
+      gap: 20px;
       position: relative;
       padding-bottom: 60px;
       margin-top: -40px;
@@ -83,7 +81,7 @@
 
     .home-btn {
       width: 80%;
-      padding: 20px;
+      padding: 24px;
       font-size: 1.3rem;
       font-weight: bold;
       border: none;
@@ -97,30 +95,8 @@
     .home-btn.receive:active { background: #22b86b; }
     .home-btn.dropzone { background: #0f3460; }
     .home-btn.dropzone:active { background: #1a4a7a; }
-    .home-btn.depal { background: #8e44ad; }
-    .home-btn.depal:active { background: #7d3c98; }
-
-    .home-bottom-row {
-      display: flex;
-      width: 80%;
-      gap: 12px;
-    }
-
-    .home-btn-small {
-      flex: 1;
-      padding: 14px;
-      font-size: 1.5rem;
-      border: none;
-      border-radius: 12px;
-      color: #fff;
-      cursor: pointer;
-      text-align: center;
-    }
-
-    .home-btn-small.search { background: #f58840; }
-    .home-btn-small.search:active { background: #d97530; }
-    .home-btn-small.overview { background: #2c3e50; }
-    .home-btn-small.overview:active { background: #34495e; }
+    .home-btn.search { background: #f58840; }
+    .home-btn.search:active { background: #d97530; }
 
     .home-footer {
       position: absolute;
@@ -147,7 +123,9 @@
       cursor: pointer;
     }
 
-    .logout-btn:active { background: #c0392b; }
+    .logout-btn:active {
+      background: #c0392b;
+    }
 
     .login-screen {
       justify-content: center;
@@ -246,7 +224,6 @@
 
     .step.active { background: #0f3460; color: #fff; }
     .step.active-receive { background: #1b9c5a; color: #fff; }
-    .step.active-depal { background: #8e44ad; color: #fff; }
     .step.done { background: #1b9c5a; color: #fff; }
 
     .scan-prompt {
@@ -257,9 +234,21 @@
     }
 
     .scan-prompt .icon { font-size: 2.5rem; margin-bottom: 8px; }
-    .scan-prompt .instruction { font-size: 1.3rem; font-weight: bold; margin-bottom: 6px; }
+
+    .scan-prompt .instruction {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
     .scan-prompt .detail { font-size: 0.9rem; color: #888; }
-    .scan-prompt .captured { font-size: 1.1rem; color: #1b9c5a; font-family: monospace; margin-top: 8px; }
+
+    .scan-prompt .captured {
+      font-size: 1.1rem;
+      color: #1b9c5a;
+      font-family: monospace;
+      margin-top: 8px;
+    }
 
     .status {
       text-align: center;
@@ -275,7 +264,6 @@
     .status.success { background: #1b9c5a; }
     .status.error   { background: #e94560; }
     .status.offline { background: #f58840; }
-    .status.depal   { background: #8e44ad; }
 
     .log-header {
       display: flex;
@@ -376,10 +364,29 @@
       padding: 8px;
     }
 
-    .search-results table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
-    .search-results th { background: #0f3460; padding: 6px 4px; text-align: center; position: sticky; top: 0; }
-    .search-results td { padding: 5px 4px; border-bottom: 1px solid #1a1a2e; text-align: center; }
-    .search-results tr:nth-child(even) { background: #1a1a2e; }
+    .search-results table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+    }
+
+    .search-results th {
+      background: #0f3460;
+      padding: 6px 4px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+    }
+
+    .search-results td {
+      padding: 5px 4px;
+      border-bottom: 1px solid #1a1a2e;
+      text-align: center;
+    }
+
+    .search-results tr:nth-child(even) {
+      background: #1a1a2e;
+    }
 
     .search-no-results {
       text-align: center;
@@ -387,158 +394,6 @@
       padding: 20px;
       font-size: 0.9rem;
     }
-
-    .overview-screen {
-      justify-content: flex-start;
-      align-items: stretch;
-      gap: 8px;
-    }
-
-    .overview-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      padding: 4px;
-    }
-
-    .overview-grid .full-width {
-      grid-column: 1 / -1;
-    }
-
-    .zone-card {
-      border-radius: 10px;
-      padding: 16px 12px;
-      text-align: center;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: background 0.3s;
-    }
-
-    .zone-card:active { opacity: 0.8; }
-    .zone-card .zone-name { font-size: 1rem; font-weight: bold; margin-bottom: 6px; }
-    .zone-card .zone-count { font-size: 2rem; font-weight: bold; color: #fff; }
-
-    .zone-receive { background: #1b9c5a; }
-    .zone-lift { background: #f58840; }
-    .zone-chiller { background: #5dade2; }
-    .zone-freezer { background: #0f3460; }
-    .zone-hrv { background: #e94560; }
-
-    .overview-footer {
-      text-align: center;
-      font-size: 0.9rem;
-      font-weight: 500;
-      padding: 10px;
-      border-radius: 6px;
-      background: #8e44ad;
-      margin-top: 4px;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .overview-footer:active { opacity: 0.8; }
-
-    .depal-detail-screen {
-      justify-content: flex-start;
-      align-items: stretch;
-      gap: 8px;
-    }
-
-    .depal-detail-status {
-      text-align: center;
-      font-size: 1rem;
-      font-weight: 500;
-      padding: 8px;
-      border-radius: 6px;
-      background: #8e44ad;
-    }
-
-    .depal-detail-list {
-      flex: 1;
-      min-height: 0;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      background: #16213e;
-      border-radius: 8px;
-      padding: 8px;
-    }
-
-    .depal-detail-list table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
-    .depal-detail-list th { background: #0f3460; padding: 6px 4px; text-align: center; position: sticky; top: 0; }
-    .depal-detail-list td { padding: 5px 4px; border-bottom: 1px solid #1a1a2e; text-align: center; }
-    .depal-detail-list tr:nth-child(even) { background: #1a1a2e; }
-
-    .depal-detail-empty {
-      text-align: center;
-      color: #888;
-      padding: 20px;
-      font-size: 0.9rem;
-    }
-
-    .zone-detail-screen {
-      justify-content: flex-start;
-      align-items: stretch;
-      gap: 8px;
-    }
-
-    .zone-nav {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .zone-nav-btn {
-      background: #16213e;
-      border: none;
-      color: #fff;
-      font-size: 1.5rem;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .zone-nav-btn:active { background: #1a2744; }
-
-    .zone-nav-name {
-      font-size: 1.4rem;
-      font-weight: bold;
-      min-width: 120px;
-      text-align: center;
-    }
-
-    .zone-detail-count {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #888;
-      margin-bottom: 4px;
-    }
-
-    .zone-detail-list {
-      flex: 1;
-      min-height: 0;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      background: #16213e;
-      border-radius: 8px;
-      padding: 8px;
-    }
-
-    .zone-detail-list table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
-    .zone-detail-list th { background: #0f3460; padding: 6px 4px; text-align: center; position: sticky; top: 0; }
-    .zone-detail-list td { padding: 5px 4px; border-bottom: 1px solid #1a1a2e; text-align: center; }
-    .zone-detail-list tr:nth-child(even) { background: #1a1a2e; }
-
-    .zone-detail-empty {
-      text-align: center;
-      color: #888;
-      padding: 20px;
-      font-size: 0.9rem;
-    }
-
-    .dwell-warn { color: #f58840; font-weight: bold; }
-    .dwell-danger { color: #e94560; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -550,6 +405,7 @@
     </button>
   </div>
 
+  <!-- STEP 1: Badge scan -->
   <div class="screen login-screen active" id="loginScreen">
     <img src="images/badge.png" alt="Scan Badge" class="badge-img">
     <p>Scan Badge</p>
@@ -558,22 +414,20 @@
     <div class="login-error" id="loginError"></div>
   </div>
 
+  <!-- STEP 2: Choose mode -->
   <div class="screen home-screen" id="homeScreen">
-    <button class="home-btn receive" onclick="startMode('receive')">Receive</button>
-    <button class="home-btn dropzone" onclick="startMode('dropzone')">Dropzone</button>
-    <button class="home-btn depal" onclick="startMode('depal')">Depalletise</button>
-    <div class="home-bottom-row">
-      <button class="home-btn-small search" onclick="startMode('search')">🔍</button>
-      <button class="home-btn-small overview" onclick="startMode('overview')">📊</button>
-    </div>
+    <button class="home-btn receive" onclick="startMode('receive')">📥 Receive</button>
+    <button class="home-btn dropzone" onclick="startMode('dropzone')">📍 Dropzone</button>
+    <button class="home-btn search" onclick="startMode('search')">🔍 Search</button>
     <div class="home-footer">
       <span class="home-user" id="homeUserName"></span>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
   </div>
 
+  <!-- STEP 3 (Receive only): Scan trailer -->
   <div class="screen trailer-screen" id="trailerScreen">
-    <div class="mode-label">Receive</div>
+    <div class="mode-label">📥 Receive</div>
     <img src="images/truck.png" alt="Scan Trailer" class="truck-img">
     <p>Scan Transhipment ID</p>
     <input type="text" class="scan-input-hidden" id="trailerInput"
@@ -581,6 +435,7 @@
     <div class="trailer-error" id="trailerError"></div>
   </div>
 
+  <!-- STEP 4: Scanner screen -->
   <div class="screen" id="scannerScreen">
     <div class="user-bar">
       <div>
@@ -613,8 +468,9 @@
     <div class="log" id="log"></div>
   </div>
 
+  <!-- SEARCH screen -->
   <div class="screen search-screen" id="searchScreen">
-    <div class="mode-label">Container Search</div>
+    <div class="mode-label">🔍 Container Search</div>
 
     <div class="search-prompt" id="searchPrompt">
       <div class="icon">
@@ -636,116 +492,79 @@
     </div>
   </div>
 
-  <div class="screen overview-screen" id="overviewScreen">
-    <div class="overview-grid" id="overviewGrid">
-      <div class="zone-card zone-receive full-width" id="cardRECEIVE" onclick="openZoneDetail('RECEIVE')">
-        <div class="zone-name">RECEIVE</div>
-        <div class="zone-count" id="countRECEIVE">-</div>
-      </div>
-      <div class="zone-card zone-lift" id="cardLIFT" onclick="openZoneDetail('LIFT')">
-        <div class="zone-name">LIFT</div>
-        <div class="zone-count" id="countLIFT">-</div>
-      </div>
-      <div class="zone-card zone-chiller" id="cardCHILLER" onclick="openZoneDetail('CHILLER')">
-        <div class="zone-name">CHILLER</div>
-        <div class="zone-count" id="countCHILLER">-</div>
-      </div>
-      <div class="zone-card zone-freezer" id="cardFREEZER" onclick="openZoneDetail('FREEZER')">
-        <div class="zone-name">FREEZER</div>
-        <div class="zone-count" id="countFREEZER">-</div>
-      </div>
-      <div class="zone-card zone-hrv" id="cardHRV" onclick="openZoneDetail('HRV')">
-        <div class="zone-name">HRV</div>
-        <div class="zone-count" id="countHRV">-</div>
-      </div>
-    </div>
-
-    <div class="overview-footer" id="overviewDepal" onclick="loadDepalDetail()">Depalletised today: -</div>
-  </div>
-
-  <div class="screen depal-detail-screen" id="depalDetailScreen">
-    <div class="depal-detail-status" id="depalDetailStatus">Depalletised Today</div>
-    <div class="depal-detail-list" id="depalDetailList">
-      <div class="depal-detail-empty">Loading...</div>
-    </div>
-  </div>
-
-  <div class="screen zone-detail-screen" id="zoneDetailScreen">
-    <div class="zone-nav">
-      <button class="zone-nav-btn" onclick="cycleZone(-1)">◀</button>
-      <div class="zone-nav-name" id="zoneNavName">LIFT</div>
-      <button class="zone-nav-btn" onclick="cycleZone(1)">▶</button>
-    </div>
-    <div class="zone-detail-count" id="zoneDetailCount">0 pallets</div>
-    <div class="zone-detail-list" id="zoneDetailList"></div>
-  </div>
-
   <script>
     var PA_URL = 'https://96a2e921c35de1afbc46731313c6a0.05.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/25/workflows/909703d3b84546168fdd241a2442692f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xNbDYhH_H6KKuStrvucP-jMYK9xmJm69t6qvUzolmMw';
     var GS_URL = 'https://script.google.com/macros/s/AKfycby1dfA3thazUN6o28UzCQpGmJMdO3hSaJTggHX0E3HGQpLBCydDhKAixW-xnJPCO44/exec';
     var OFFLINE_KEY = 'dropzone_offline_queue';
     var VALID_DROPZONES = ['LIFT', 'CHILLER', 'FREEZER', 'HRV'];
-    var ZONE_ORDER = ['RECEIVE', 'LIFT', 'CHILLER', 'FREEZER', 'HRV'];
-    var ZONE_CLASSES = { RECEIVE: 'zone-receive', LIFT: 'zone-lift', CHILLER: 'zone-chiller', FREEZER: 'zone-freezer', HRV: 'zone-hrv' };
     var pageTitle = document.getElementById('pageTitle');
 
+    // ── SOUND EFFECTS ──
     var successSound = new Audio('sounds/success.mp3');
     var errorSound = new Audio('sounds/error.mp3');
 
-    function playSuccess() { successSound.currentTime = 0; successSound.play().catch(function() {}); }
-    function playError() { errorSound.currentTime = 0; errorSound.play().catch(function() {}); }
+    function playSuccess() {
+      successSound.currentTime = 0;
+      successSound.play().catch(function() {});
+    }
 
+    function playError() {
+      errorSound.currentTime = 0;
+      errorSound.play().catch(function() {});
+    }
+
+    // ── ROSTER LOOKUP ──
     var roster = {};
 
     fetch('data/roster.csv')
-      .then(function(r) { if (!r.ok) throw new Error('Not found'); return r.text(); })
+      .then(function(r) {
+        if (!r.ok) throw new Error('Not found');
+        return r.text();
+      })
       .then(function(text) {
         var lines = text.trim().split('\n');
         for (var i = 1; i < lines.length; i++) {
           var parts = lines[i].split(',');
           if (parts.length >= 2) {
-            roster[parts[1].trim()] = parts[0].trim();
+            var alias = parts[0].trim();
+            var badge = parts[1].trim();
+            roster[badge] = alias;
           }
         }
         console.log('Roster loaded: ' + Object.keys(roster).length + ' employees');
       })
-      .catch(function() { console.log('No roster found'); });
+      .catch(function() {
+        console.log('No roster found — will display badge numbers');
+      });
 
-    function lookupAlias(badge) { return roster[badge] || badge; }
+    function lookupAlias(badge) {
+      return roster[badge] || badge;
+    }
 
+    // ── TRAILER ID ABBREVIATION (scanner screen — keeps site name) ──
     function abbreviateTrailer(id) {
       if (!id) return 'N/A';
       var parts = id.split('_');
-      if (parts.length === 3 && parts[2].indexOf('-') !== -1) return parts[0] + '_' + parts[1] + '_' + parts[2].slice(-6);
-      if (parts.length >= 5 && parts[2] === 'UNTRAC') return parts[0] + '_' + parts[1] + '_' + parts[2] + '_' + parts[parts.length - 1].slice(-6);
+      if (parts.length === 3 && parts[2].indexOf('-') !== -1) {
+        return parts[0] + '_' + parts[1] + '_' + parts[2].slice(-6);
+      }
+      if (parts.length >= 5 && parts[2] === 'UNTRAC') {
+        return parts[0] + '_' + parts[1] + '_' + parts[2] + '_' + parts[parts.length - 1].slice(-6);
+      }
       return id;
     }
 
+    // ── SHORT TRAILER (search screen — drops site name to save space) ──
     function shortTrailer(id) {
       if (!id) return 'N/A';
       var parts = id.split('_');
-      if (parts.length === 3 && parts[2].indexOf('-') !== -1) return parts[0] + '_' + parts[2].slice(-6);
-      if (parts.length >= 5 && parts[2] === 'UNTRAC') return parts[0] + '_' + parts[2] + '_' + parts[parts.length - 1].slice(-6);
+      if (parts.length === 3 && parts[2].indexOf('-') !== -1) {
+        return parts[0] + '_' + parts[2].slice(-6);
+      }
+      if (parts.length >= 5 && parts[2] === 'UNTRAC') {
+        return parts[0] + '_' + parts[2] + '_' + parts[parts.length - 1].slice(-6);
+      }
       return id;
-    }
-
-    function calcLiveDwell(timestamp) {
-      var ts = parseTimestamp(timestamp);
-      if (!ts) return -1;
-      var now = new Date();
-      return Math.round((now - ts) / 60000);
-    }
-
-    function formatDwell(mins) {
-      if (mins < 0) return '';
-      if (mins < 60) return mins + 'm';
-      return Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm';
-    }
-
-    function dwellClass(mins) {
-      if (mins >= 30) return 'dwell-danger';
-      if (mins >= 15) return 'dwell-warn';
-      return '';
     }
 
     var currentMode = '';
@@ -756,50 +575,55 @@
     var scanCount = 0;
     var scanStep = 'pallet';
     var statusTimer = null;
-    var overviewData = {};
-    var depalCount = 0;
-    var currentZoneIndex = 0;
 
-    var badgeInput = document.getElementById('badgeInput');
-    var loginError = document.getElementById('loginError');
-    var trailerInput = document.getElementById('trailerInput');
-    var trailerError = document.getElementById('trailerError');
-    var scanInput = document.getElementById('scanInput');
-    var statusEl = document.getElementById('status');
-    var logEl = document.getElementById('log');
-    var scanCountEl = document.getElementById('scanCount');
-    var promptIcon = document.getElementById('promptIcon');
-    var promptText = document.getElementById('promptText');
-    var promptDetail = document.getElementById('promptDetail');
+    var badgeInput     = document.getElementById('badgeInput');
+    var loginError     = document.getElementById('loginError');
+    var trailerInput   = document.getElementById('trailerInput');
+    var trailerError   = document.getElementById('trailerError');
+    var scanInput      = document.getElementById('scanInput');
+    var statusEl       = document.getElementById('status');
+    var logEl          = document.getElementById('log');
+    var scanCountEl    = document.getElementById('scanCount');
+    var promptIcon     = document.getElementById('promptIcon');
+    var promptText     = document.getElementById('promptText');
+    var promptDetail   = document.getElementById('promptDetail');
     var promptCaptured = document.getElementById('promptCaptured');
-    var stepPallet = document.getElementById('stepPallet');
-    var stepDropzone = document.getElementById('stepDropzone');
-    var searchInput = document.getElementById('searchInput');
-    var searchStatus = document.getElementById('searchStatus');
-    var searchResults = document.getElementById('searchResults');
-    var searchTrailerBox = document.getElementById('searchTrailerBox');
+    var stepPallet     = document.getElementById('stepPallet');
+    var stepDropzone   = document.getElementById('stepDropzone');
+    var searchInput    = document.getElementById('searchInput');
+    var searchStatus   = document.getElementById('searchStatus');
+    var searchResults  = document.getElementById('searchResults');
+    var searchTrailerBox   = document.getElementById('searchTrailerBox');
     var searchTrailerValue = document.getElementById('searchTrailerValue');
-    var overviewDepal = document.getElementById('overviewDepal');
-    var depalDetailStatus = document.getElementById('depalDetailStatus');
-    var depalDetailList = document.getElementById('depalDetailList');
-    var zoneNavName = document.getElementById('zoneNavName');
-    var zoneDetailCount = document.getElementById('zoneDetailCount');
-    var zoneDetailList = document.getElementById('zoneDetailList');
 
+    // Prevent all scrolling except log and search results
     document.addEventListener('touchmove', function(e) {
-      if (!e.target.closest('.log') && !e.target.closest('.search-results') && !e.target.closest('.zone-detail-list') && !e.target.closest('.depal-detail-list')) {
+      if (!e.target.closest('.log') && !e.target.closest('.search-results')) {
         e.preventDefault();
       }
     }, { passive: false });
 
-    function isValidBadge(v) { return /^\d+$/.test(v); }
-    function isDropzone(v) { return VALID_DROPZONES.indexOf(v) !== -1; }
-    function isValidPallet(v) { return v.length >= 11 && v.startsWith('PALLET_') && !isDropzone(v); }
-    function isValidTrailer(v) { return /^[A-Z0-9]{4}_/.test(v); }
+    function isValidBadge(value) {
+      return /^\d+$/.test(value);
+    }
+
+    function isDropzone(value) {
+      return VALID_DROPZONES.indexOf(value) !== -1;
+    }
+
+    function isValidPallet(value) {
+      return value.length >= 11 && value.startsWith('PALLET_') && !isDropzone(value);
+    }
+
+    function isValidTrailer(value) {
+      return /^[A-Z0-9]{4}_/.test(value);
+    }
 
     function showScreen(id) {
       var screens = document.querySelectorAll('.screen');
-      for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
+      for (var i = 0; i < screens.length; i++) {
+        screens[i].classList.remove('active');
+      }
       document.getElementById(id).classList.add('active');
     }
 
@@ -816,26 +640,37 @@
       promptIcon.style.justifyContent = 'center';
     }
 
+    // ── BADGE SCAN (Step 1) ──
     badgeInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
         var badge = badgeInput.value.trim();
         badgeInput.value = '';
         if (!badge) return;
-        if (!isValidBadge(badge)) { loginError.textContent = '❌ Invalid ID'; playError(); return; }
+
+        if (!isValidBadge(badge)) {
+          loginError.textContent = '❌ Invalid ID';
+          playError();
+          return;
+        }
+
         loginError.textContent = '';
         currentUser = badge;
         currentUserDisplay = lookupAlias(badge);
+
         document.getElementById('homeUserName').textContent = currentUserDisplay;
         document.getElementById('userName').textContent = currentUserDisplay;
+
         pageTitle.textContent = 'Inbound Management';
         showScreen('homeScreen');
       }
     });
 
+    // ── CHOOSE MODE (Step 2) ──
     function startMode(mode) {
       currentMode = mode;
       currentTrailer = '';
+
       if (mode === 'receive') {
         pageTitle.textContent = 'Inbound Receive';
         showScreen('trailerScreen');
@@ -851,18 +686,13 @@
         searchTrailerBox.style.display = 'none';
         searchResults.innerHTML = '<div class="search-no-results">Scan a pallet barcode to see its history</div>';
         searchInput.focus();
-      } else if (mode === 'depal') {
-        pageTitle.textContent = 'Depalletise';
-        enterScanner();
-      } else if (mode === 'overview') {
-        pageTitle.textContent = 'Dropzone Overview';
-        loadOverview();
       } else {
         pageTitle.textContent = 'Inbound Move';
         enterScanner();
       }
     }
 
+    // ── HOME (logo button) ──
     function goHome() {
       if (!currentUser) return;
       currentPallet = '';
@@ -877,6 +707,7 @@
       showScreen('homeScreen');
     }
 
+    // ── LOGOUT ──
     function logout() {
       currentUser = '';
       currentUserDisplay = '';
@@ -896,51 +727,61 @@
       badgeInput.focus();
     }
 
+    // ── AUTO FOCUS ──
     document.addEventListener('click', function(e) {
-      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.home-btn-small') || e.target.closest('.logout-btn') || e.target.closest('.zone-card') || e.target.closest('.zone-nav-btn') || e.target.closest('.overview-footer')) return;
+      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.logout-btn')) return;
       autoFocus();
     });
     document.addEventListener('touchstart', function(e) {
-      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.home-btn-small') || e.target.closest('.logout-btn') || e.target.closest('.zone-card') || e.target.closest('.zone-nav-btn') || e.target.closest('.overview-footer')) return;
+      if (e.target.closest('.logo-btn') || e.target.closest('.home-btn') || e.target.closest('.logout-btn')) return;
       autoFocus();
     });
     setInterval(autoFocus, 2000);
 
     function autoFocus() {
-      if (document.getElementById('loginScreen').classList.contains('active')) badgeInput.focus();
-      else if (document.getElementById('trailerScreen').classList.contains('active')) trailerInput.focus();
-      else if (document.getElementById('scannerScreen').classList.contains('active')) scanInput.focus();
-      else if (document.getElementById('searchScreen').classList.contains('active')) searchInput.focus();
+      var loginScreen = document.getElementById('loginScreen');
+      var trailerScreen = document.getElementById('trailerScreen');
+      var scannerScreen = document.getElementById('scannerScreen');
+      var searchScreen = document.getElementById('searchScreen');
+
+      if (loginScreen.classList.contains('active')) badgeInput.focus();
+      else if (trailerScreen.classList.contains('active')) trailerInput.focus();
+      else if (scannerScreen.classList.contains('active')) scanInput.focus();
+      else if (searchScreen.classList.contains('active')) searchInput.focus();
     }
 
+    // ── TRAILER SCAN (Step 3, Receive only) ──
     trailerInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
         var trailer = trailerInput.value.trim().toUpperCase();
         trailerInput.value = '';
         if (!trailer) return;
-        if (!isValidTrailer(trailer)) { trailerError.textContent = '❌ Invalid Transhipment ID'; playError(); return; }
+
+        if (!isValidTrailer(trailer)) {
+          trailerError.textContent = '❌ Invalid Transhipment ID';
+          playError();
+          return;
+        }
+
         trailerError.textContent = '';
         currentTrailer = trailer;
         enterScanner();
       }
     });
 
+    // ── ENTER SCANNER (Step 4) ──
     function enterScanner() {
       scanCount = 0;
       logEl.innerHTML = '';
       scanCountEl.textContent = '0 scans';
 
       if (currentMode === 'receive') {
-        document.getElementById('trailerDisplay').innerHTML = 'Trailer: <span class="trailer-id">' + abbreviateTrailer(currentTrailer) + '</span>';
+        document.getElementById('trailerDisplay').innerHTML =
+          'Trailer: <span class="trailer-id">' + abbreviateTrailer(currentTrailer) + '</span>';
         document.getElementById('stepIndicator').style.display = 'none';
         document.getElementById('logTitle').textContent = 'Receive Log';
         setReceivePalletStep();
-      } else if (currentMode === 'depal') {
-        document.getElementById('trailerDisplay').innerHTML = '';
-        document.getElementById('stepIndicator').style.display = 'none';
-        document.getElementById('logTitle').textContent = 'Depalletise Log';
-        setDepalStep();
       } else {
         document.getElementById('trailerDisplay').innerHTML = '';
         document.getElementById('stepIndicator').style.display = 'flex';
@@ -953,21 +794,33 @@
       scanInput.focus();
     }
 
+    // ── SCAN HANDLER ──
     scanInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
         var value = scanInput.value.trim().toUpperCase();
         scanInput.value = '';
         if (!value) return;
-        if (currentMode === 'receive') handleReceiveScan(value);
-        else if (currentMode === 'depal') handleDepalScan(value);
-        else handleDropzoneScan(value);
+
+        if (currentMode === 'receive') {
+          handleReceiveScan(value);
+        } else {
+          handleDropzoneScan(value);
+        }
       }
     });
 
     function handleReceiveScan(value) {
-      if (isDropzone(value)) { setStatus('❌ Invalid Pallet ID', 'error'); playError(); return; }
-      if (!isValidPallet(value)) { setStatus('❌ Invalid Pallet', 'error'); playError(); return; }
+      if (isDropzone(value)) {
+        setStatus('❌ Invalid Pallet ID', 'error');
+        playError();
+        return;
+      }
+      if (!isValidPallet(value)) {
+        setStatus('❌ Invalid Pallet', 'error');
+        playError();
+        return;
+      }
       submitScan(value, 'RECEIVE');
     }
 
@@ -984,32 +837,27 @@
       setStatus('Scan Pallet', 'ready');
     }
 
-    function handleDepalScan(value) {
-      if (isDropzone(value)) { setStatus('❌ Invalid Pallet ID', 'error'); playError(); return; }
-      if (!isValidPallet(value)) { setStatus('❌ Invalid Pallet', 'error'); playError(); return; }
-      submitScan(value, 'DEPALLETISE');
-    }
-
-    function setDepalStep() {
-      scanStep = 'pallet';
-      setInlineIcons(
-        '<img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">' +
-        '<span style="font-size:2rem;margin:0 10px;">📦</span>'
-      );
-      promptText.textContent = '';
-      promptDetail.textContent = '';
-      promptCaptured.textContent = '';
-      setStatus('Scan Pallet', 'depal');
-    }
-
     function handleDropzoneScan(value) {
       if (scanStep === 'pallet') {
-        if (isDropzone(value)) { setStatus('❌ No pallet selected for move', 'error'); playError(); return; }
-        if (!isValidPallet(value)) { setStatus('❌ Invalid Pallet', 'error'); playError(); return; }
+        if (isDropzone(value)) {
+          setStatus('❌ No pallet selected for move', 'error');
+          playError();
+          return;
+        }
+        if (!isValidPallet(value)) {
+          setStatus('❌ Invalid Pallet', 'error');
+          playError();
+          return;
+        }
         currentPallet = value;
         setDropzoneStep();
+
       } else if (scanStep === 'dropzone') {
-        if (!isDropzone(value)) { setStatus('❌ Invalid Dropzone', 'error'); playError(); return; }
+        if (!isDropzone(value)) {
+          setStatus('❌ Invalid Dropzone', 'error');
+          playError();
+          return;
+        }
         submitScan(currentPallet, value);
         currentPallet = '';
       }
@@ -1020,7 +868,9 @@
       stepPallet.className = 'step active';
       stepPallet.textContent = '1. Pallet';
       stepDropzone.className = 'step';
-      setInlineIcons('<img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">');
+      setInlineIcons(
+        '<img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">'
+      );
       promptText.textContent = '';
       promptDetail.textContent = '';
       promptCaptured.textContent = '';
@@ -1064,6 +914,7 @@
       addLogEntry(entry, 'pending');
       setStatus('Sending: ' + palletId + ' → ' + dropzone, 'ready');
 
+      // Send to Power Automate (SharePoint)
       fetch(PA_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1076,10 +927,11 @@
           playSuccess();
           if (statusTimer) clearTimeout(statusTimer);
           statusTimer = setTimeout(function() {
-            if (currentMode === 'depal') setStatus('Scan Pallet', 'depal');
-            else setStatus('Scan Pallet', 'ready');
+            setStatus('Scan Pallet', 'ready');
           }, 3000);
-        } else { throw new Error('HTTP ' + r.status); }
+        } else {
+          throw new Error('HTTP ' + r.status);
+        }
       })
       .catch(function() {
         queueOffline(entry);
@@ -1087,39 +939,51 @@
         setStatus('⚠ Queued offline: ' + palletId, 'offline');
         if (statusTimer) clearTimeout(statusTimer);
         statusTimer = setTimeout(function() {
-          if (currentMode === 'depal') setStatus('Scan Pallet', 'depal');
-          else setStatus('Scan Pallet', 'ready');
+          setStatus('Scan Pallet', 'ready');
         }, 3000);
       });
 
+      // Also send to Google Sheets (search mirror)
       fetch(GS_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(entry)
-      }).catch(function() { console.log('Google Sheets mirror failed'); });
+      }).catch(function() {
+        console.log('Google Sheets mirror failed — search may be incomplete');
+      });
 
-      if (currentMode === 'receive') setReceivePalletStep();
-      else if (currentMode === 'depal') setDepalStep();
-      else {
+      if (currentMode === 'receive') {
+        setReceivePalletStep();
+      } else {
         scanStep = 'pallet';
         stepPallet.className = 'step active';
         stepPallet.textContent = '1. Pallet';
         stepDropzone.className = 'step';
-        setInlineIcons('<img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">');
+        setInlineIcons(
+          '<img src="images/pallet.png" alt="Pallet" style="width:60px;height:auto;">'
+        );
         promptText.textContent = '';
         promptDetail.textContent = '';
         promptCaptured.textContent = '';
       }
     }
 
+    // ── SEARCH HANDLER ──
     searchInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
         var value = searchInput.value.trim().toUpperCase();
         searchInput.value = '';
         if (!value) return;
-        if (!isValidPallet(value)) { searchStatus.textContent = '❌ Invalid Pallet'; searchStatus.className = 'search-status error'; playError(); return; }
+
+        if (!isValidPallet(value)) {
+          searchStatus.textContent = '❌ Invalid Pallet';
+          searchStatus.className = 'search-status error';
+          playError();
+          return;
+        }
+
         performSearch(value);
       }
     });
@@ -1142,24 +1006,34 @@
           return;
         }
 
+        // Find the RECEIVE entry for transhipment ID and base timestamp
         var receiveEntry = null;
         for (var i = 0; i < data.results.length; i++) {
-          if (data.results[i].dropzone === 'RECEIVE') { receiveEntry = data.results[i]; break; }
+          if (data.results[i].dropzone === 'RECEIVE') {
+            receiveEntry = data.results[i];
+            break;
+          }
         }
 
         var receiveTrailer = receiveEntry ? receiveEntry.trailerId : '';
         var receiveTime = receiveEntry ? parseTimestamp(receiveEntry.timestamp) : null;
 
+        // Green success bar with tick and pallet ID
         searchStatus.textContent = '✓ ' + palletId;
         searchStatus.className = 'search-status success';
         playSuccess();
 
+        // Show trailer box
         if (receiveTrailer) {
           searchTrailerValue.textContent = shortTrailer(receiveTrailer);
           searchTrailerBox.style.display = 'block';
-        } else { searchTrailerBox.style.display = 'none'; }
+        } else {
+          searchTrailerBox.style.display = 'none';
+        }
 
-        var html = '<table><tr><th>Dropzone</th><th>Alias</th><th>Time</th><th>Delta</th></tr>';
+        // Build table WITHOUT trailer column
+        var html = '<table>';
+        html += '<tr><th>Dropzone</th><th>Alias</th><th>Time</th><th>Delta</th></tr>';
 
         for (var i = 0; i < data.results.length; i++) {
           var row = data.results[i];
@@ -1170,10 +1044,21 @@
             delta = '0';
           } else if (receiveTime) {
             var rowTime = parseTimestamp(row.timestamp);
-            if (rowTime) delta = '+' + Math.round((rowTime - receiveTime) / 60000);
+            if (rowTime) {
+              var diffMins = Math.round((rowTime - receiveTime) / 60000);
+              delta = '+' + diffMins;
+            }
           }
 
-          html += '<tr><td>' + row.dropzone + '</td><td>' + alias + '</td><td>' + formatSearchTime(row.timestamp) + '</td><td>' + delta + '</td></tr>';
+          // Format time as hh:mm dd/mm
+          var displayTime = formatSearchTime(row.timestamp);
+
+          html += '<tr>';
+          html += '<td>' + row.dropzone + '</td>';
+          html += '<td>' + alias + '</td>';
+          html += '<td>' + displayTime + '</td>';
+          html += '<td>' + delta + '</td>';
+          html += '</tr>';
         }
 
         html += '</table>';
@@ -1188,170 +1073,61 @@
       });
     }
 
-    function loadOverview() {
-      showScreen('overviewScreen');
-      overviewDepal.textContent = 'Depalletised today: -';
-
-      for (var z = 0; z < ZONE_ORDER.length; z++) {
-        document.getElementById('count' + ZONE_ORDER[z]).textContent = '-';
-        var extraClass = (ZONE_ORDER[z] === 'RECEIVE') ? ' full-width' : '';
-        document.getElementById('card' + ZONE_ORDER[z]).className = 'zone-card ' + ZONE_CLASSES[ZONE_ORDER[z]] + extraClass;
-      }
-
-      fetch(GS_URL + '?overviewMode=true')
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (!data.overview) return;
-
-        overviewData = data.overview;
-        depalCount = data.depalToday || 0;
-
-        for (var z = 0; z < ZONE_ORDER.length; z++) {
-          var zone = ZONE_ORDER[z];
-          var pallets = overviewData[zone] || [];
-
-          pallets.sort(function(a, b) {
-            var ta = parseTimestamp(a.timestamp);
-            var tb = parseTimestamp(b.timestamp);
-            if (!ta && !tb) return 0;
-            if (!ta) return 1;
-            if (!tb) return -1;
-            return tb - ta;
-          });
-          overviewData[zone] = pallets;
-
-          document.getElementById('count' + zone).textContent = pallets.length;
-
-          var extraClass = (zone === 'RECEIVE') ? ' full-width' : '';
-          document.getElementById('card' + zone).className = 'zone-card ' + ZONE_CLASSES[zone] + extraClass;
-        }
-
-        overviewDepal.textContent = 'Depalletised today: ' + depalCount;
-      })
-      .catch(function() {
-        overviewDepal.textContent = 'Depalletised today: ❌';
-      });
-    }
-
-    function loadDepalDetail() {
-      pageTitle.textContent = 'Depalletised Today';
-      showScreen('depalDetailScreen');
-      depalDetailStatus.textContent = 'Loading...';
-      depalDetailList.innerHTML = '<div class="depal-detail-empty">Loading...</div>';
-
-      fetch(GS_URL + '?depalMode=true')
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (!data.results || data.results.length === 0) {
-          depalDetailStatus.textContent = 'Depalletised Today: 0';
-          depalDetailList.innerHTML = '<div class="depal-detail-empty">No pallets depalletised today</div>';
-          return;
-        }
-
-        depalDetailStatus.textContent = 'Depalletised Today: ' + data.results.length;
-
-        var html = '<table><tr><th>Pallet ID</th><th>From</th><th>Alias</th><th>Time</th></tr>';
-
-        for (var i = data.results.length - 1; i >= 0; i--) {
-          var row = data.results[i];
-          var alias = lookupAlias(row.user);
-          var displayTime = formatSearchTime(row.timestamp);
-
-          html += '<tr>';
-          html += '<td style="font-family:monospace;font-size:0.7rem;">' + row.palletId + '</td>';
-          html += '<td>' + row.dropzone + '</td>';
-          html += '<td>' + alias + '</td>';
-          html += '<td>' + displayTime + '</td>';
-          html += '</tr>';
-        }
-
-        html += '</table>';
-        depalDetailList.innerHTML = html;
-      })
-      .catch(function() {
-        depalDetailStatus.textContent = 'Failed to load';
-        depalDetailList.innerHTML = '<div class="depal-detail-empty">Failed to load. Try again.</div>';
-      });
-    }
-
-    function openZoneDetail(zone) {
-      currentZoneIndex = ZONE_ORDER.indexOf(zone);
-      pageTitle.textContent = 'Dropzone Overview';
-      showScreen('zoneDetailScreen');
-      renderZoneDetail();
-    }
-
-    function cycleZone(direction) {
-      currentZoneIndex = (currentZoneIndex + direction + ZONE_ORDER.length) % ZONE_ORDER.length;
-      renderZoneDetail();
-    }
-
-    function renderZoneDetail() {
-      var zone = ZONE_ORDER[currentZoneIndex];
-      var pallets = overviewData[zone] || [];
-
-      zoneNavName.textContent = zone;
-      zoneNavName.className = 'zone-nav-name';
-      zoneDetailCount.textContent = pallets.length + ' pallet' + (pallets.length !== 1 ? 's' : '');
-
-      if (pallets.length === 0) {
-        zoneDetailList.innerHTML = '<div class="zone-detail-empty">No pallets in ' + zone + '</div>';
-      } else {
-        var html = '<table><tr><th>Pallet ID</th><th>Alias</th><th>Time</th><th>Dwell</th></tr>';
-
-        for (var i = 0; i < pallets.length; i++) {
-          var p = pallets[i];
-          var alias = lookupAlias(p.user);
-          var displayTime = formatSearchTime(p.timestamp);
-          var mins = calcLiveDwell(p.timestamp);
-          var dwellText = (mins >= 0) ? formatDwell(mins) : '';
-          var dwClass = (mins >= 0) ? dwellClass(mins) : '';
-
-          html += '<tr>';
-          html += '<td style="font-family:monospace;font-size:0.7rem;">' + p.palletId + '</td>';
-          html += '<td>' + alias + '</td>';
-          html += '<td>' + displayTime + '</td>';
-          html += '<td class="' + dwClass + '">' + dwellText + '</td>';
-          html += '</tr>';
-        }
-
-        html += '</table>';
-        zoneDetailList.innerHTML = html;
-      }
-    }
-
     function formatSearchTime(ts) {
       if (!ts) return '';
-      ts = String(ts).trim();
+      ts = ts.trim();
+
+      // Try parsing yyyy/mm/dd hh:mm format
       var parts = ts.split(' ');
       if (parts.length >= 2) {
         var dateBits = parts[0].split('/');
         var timeBits = parts[1];
-        if (dateBits.length === 3 && timeBits) return timeBits + ' ' + dateBits[2] + '/' + dateBits[1];
+        if (dateBits.length === 3 && timeBits) {
+          return timeBits + ' ' + dateBits[2] + '/' + dateBits[1];
+        }
       }
+
+      // Fallback: try parsing as a Date string
       var d = new Date(ts);
       if (!isNaN(d.getTime())) {
-        return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ' ' + String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
+        var hh = String(d.getHours()).padStart(2, '0');
+        var mm = String(d.getMinutes()).padStart(2, '0');
+        var dd = String(d.getDate()).padStart(2, '0');
+        var mo = String(d.getMonth() + 1).padStart(2, '0');
+        return hh + ':' + mm + ' ' + dd + '/' + mo;
       }
+
       return ts;
     }
 
     function parseTimestamp(ts) {
       if (!ts) return null;
-      ts = String(ts).trim();
+      ts = ts.trim();
+
+      // Try yyyy/mm/dd hh:mm format
       var parts = ts.split(' ');
       if (parts.length >= 2) {
         var dateParts = parts[0].split('/');
         var timeParts = parts[1].split(':');
         if (dateParts.length === 3 && timeParts.length >= 2) {
-          return new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]), parseInt(timeParts[0]), parseInt(timeParts[1]));
+          return new Date(
+            parseInt(dateParts[0]),
+            parseInt(dateParts[1]) - 1,
+            parseInt(dateParts[2]),
+            parseInt(timeParts[0]),
+            parseInt(timeParts[1])
+          );
         }
       }
+
+      // Fallback: try native Date parsing
       var d = new Date(ts);
       if (!isNaN(d.getTime())) return d;
+
       return null;
     }
 
+    // ── OFFLINE QUEUE ──
     function queueOffline(entry) {
       var queue = JSON.parse(localStorage.getItem(OFFLINE_KEY) || '[]');
       queue.push(entry);
@@ -1361,6 +1137,7 @@
     function flushOffline() {
       var queue = JSON.parse(localStorage.getItem(OFFLINE_KEY) || '[]');
       if (queue.length === 0) return;
+
       var remaining = [];
       var sent = 0;
 
@@ -1371,10 +1148,12 @@
           body: JSON.stringify(entry)
         })
         .then(function(r) {
-          if (r.ok || r.status === 202) sent++;
-          else remaining.push(entry);
+          if (r.ok || r.status === 202) { sent++; }
+          else { remaining.push(entry); }
         })
-        .catch(function() { remaining.push(entry); })
+        .catch(function() {
+          remaining.push(entry);
+        })
         .finally(function() {
           if (sent + remaining.length === queue.length) {
             localStorage.setItem(OFFLINE_KEY, JSON.stringify(remaining));
@@ -1396,23 +1175,32 @@
       div.className = 'log-entry ' + state;
       div.dataset.palletId = entry.palletId;
       div.dataset.time = entry.timestamp;
-      div.innerHTML = '<span class="barcode">' + entry.palletId + '</span><span>' + entry.dropzone + '</span><span class="time">' + entry.timestamp.split(' ')[1] + '</span>';
+      div.innerHTML =
+        '<span class="barcode">' + entry.palletId + '</span>' +
+        '<span>' + entry.dropzone + '</span>' +
+        '<span class="time">' + entry.timestamp.split(' ')[1] + '</span>';
       logEl.insertBefore(div, logEl.firstChild);
       while (logEl.children.length > 50) logEl.removeChild(logEl.lastChild);
     }
 
-    function updateLogEntry(palletId, time, state) {
+    function updateLogEntry(palletId, timestamp, state) {
       var entries = logEl.querySelectorAll('.log-entry');
       for (var i = 0; i < entries.length; i++) {
-        if (entries[i].dataset.palletId === palletId && entries[i].dataset.time === time) {
+        if (entries[i].dataset.palletId === palletId && entries[i].dataset.time === timestamp) {
           entries[i].className = 'log-entry ' + state;
           break;
         }
       }
     }
 
-    badgeInput.focus();
+    window.addEventListener('online', function() {
+      setStatus('Back online — syncing...', 'success');
+      flushOffline();
+    });
+
+    window.addEventListener('offline', function() {
+      setStatus('⚠ Offline — scans will be queued', 'offline');
+    });
   </script>
 </body>
 </html>
-
